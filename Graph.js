@@ -20,15 +20,17 @@ class Graph {
   static toDraw = (GraphNodes) => {
     const nodesDraw = {};
     GraphNodes.forEach((node,index) => {
-      nodesDraw[index]= { name: node.name };
+      // console.log(index,node.id);
+      nodesDraw[node.id]= { name: node.id };
     });
+    // console.log(nodesDraw);
 
     const links = [];
     GraphNodes.forEach((node) => {
       for (let index = 0; index < node.links.length; index++) {
         const link = node.links[index];
         links.push({
-          source: node.name,
+          source: node.id,
           target: link.to,
           label: link.value,
         });
@@ -39,7 +41,7 @@ class Graph {
 
   pushNode = (name) => {
     const node = new Node()
-    node.name = name
+    node.id = name
     this.nodes.push(node);
   };
 
@@ -51,7 +53,7 @@ class Graph {
   };
 
   findNode = (toFound) => {
-    return this.nodes.find((x) => x.name == toFound);
+    return this.nodes.find((x) => x.id == toFound);
   };
 
   copyGraph = () => {
@@ -79,33 +81,35 @@ class Graph {
 
   link = (from, to , value) => {
     console.log(from,to,value, this.nodes);
-    const iniNode = this.nodes.find(x=>x.name == from)
+    const iniNode = this.nodes.find(x=>x.id == from)
     iniNode.pushLink(to,value)
   }
 
   getFreeNodeName = () => {
     let newNodeKey = 0
     // console.log(this.nodes);
-    let temp = this.nodes.find(x=>x.name == newNodeKey)
+    let temp = this.nodes.find(x=>x.id == newNodeKey)
     while(temp !== undefined) {
       newNodeKey++
-      temp = this.nodes.find(x=>x.name == newNodeKey)
+      temp = this.nodes.find(x=>x.id == newNodeKey)
     }
     return newNodeKey
   }
   RemoveWithCopy = (a, b) => {
-    const aNode = this.nodes.find(x=>x.name == a)
-    const bNode = this.nodes.find(x=>x.name == b)
+    const aNode = this.nodes.find(x=>x.id == a)
+    const bNode = this.nodes.find(x=>x.id == b)
     // console.log(aNode, bNode);
+    // console.log(this.nodes);
     
-    bNode.links = aNode.links
-    this.nodes = this.nodes.filter(x=>x.name != a)
+    aNode.links = bNode.links
+    this.nodes = this.nodes.filter(x=>x.id != b)
+    // console.log(this.nodes); 
   }
 
 }
 
 function Node() {
-  this.name = "";
+  this.id = "";
   this.links = [];
   this.isVisited = false;
 
@@ -114,12 +118,12 @@ function Node() {
   };
 
   this.setName = (n) => {
-    this.name = n;
+    this.id = n;
     return this;
   };
 
   this.getName = () => {
-    return this.name;
+    return this.id;
   };
 
   this.pushLink = (to, value) => {
@@ -152,7 +156,7 @@ const toGraph=(obj)=>{
   for (let i = 0; i < obj.length; i++) {
       const node = obj[i];
       const newNode = new Node()
-      newNode.setName(node.name)
+      newNode.setName(node.id)
       newNode.setIsVisited(false)
       node.links?.forEach(link => {
           newNode.pushLink(link.to,link.value)

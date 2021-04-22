@@ -98,7 +98,7 @@ function Automata() {
     };
 
     const thompson3 = (p1Ini, p1End,p2Ini, p2End) => {
-      // console.log(p1Ini, p1End,p2Ini, p2End);
+      console.log(p1Ini, p1End,p2Ini, p2End);
       let resIni, resEnd
       if(p1Ini==undefined){
         resIni = p2Ini
@@ -109,8 +109,10 @@ function Automata() {
       }else{
         resIni = p1Ini
         resEnd = p2End
-        this.graph.RemoveWithCopy(p2Ini,p1End );
-        console.log(this.graph.nodes);
+        this.graph.RemoveWithCopy(p1End, p2Ini);
+        // console.log(p2Ini,p1End );
+        // console.log('3',resIni,resEnd,this.graph.nodes);
+        // debugger
       }
       return ['3',resIni,resEnd]
     };
@@ -130,9 +132,11 @@ function Automata() {
       console.log(type, aIni, aEnd, rIni, rEnd);
       if(type == '4'){
         const [_,tIni, tEnd] = thompson4(aIni, aEnd)
-        console.log(tIni, tEnd);
-        console.log( aIni, aEnd,tIni, tEnd);
-        return thompson3(tIni, tEnd, rIni, rEnd)
+        // console.log(tIni, tEnd);
+        // console.log( aIni, aEnd, rIni, rEnd);
+        const a = thompson3(tIni, tEnd, rIni, rEnd)
+        // console.log(a);
+        return a
       }else if(type =='5'){
         return thompson5(aIni, aEnd, rIni, rEnd)
       }else if(type == '3'){
