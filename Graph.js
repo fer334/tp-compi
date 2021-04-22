@@ -80,7 +80,9 @@ class Graph {
   };
 
   link = (from, to , value) => {
-    console.log(from,to,value, this.nodes);
+    if (value == undefined)
+      throw Error('error')
+    // console.log(from,to,value, this.nodes);
     const iniNode = this.nodes.find(x=>x.id == from)
     iniNode.pushLink(to,value)
   }

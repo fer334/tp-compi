@@ -2,7 +2,7 @@ const epsilon = '\0'
 
 const aGraph = [
     {
-        name: 0,
+        id: 0,
         links:[
             {
                 to: 1,
@@ -11,7 +11,7 @@ const aGraph = [
         ]
     },
     {
-        name: 1,
+        id: 1,
         links:[
             {
                 to: 1,
@@ -28,7 +28,7 @@ const aGraph = [
         ]
     },
     {
-        name: 2,
+        id: 2,
         links:[
             {
                 to: 3,
@@ -37,7 +37,7 @@ const aGraph = [
         ]
     },
     {
-        name: 3,
+        id: 3,
         links:[
             {
                 to: 4,
@@ -46,7 +46,7 @@ const aGraph = [
         ]
     },
     {
-        name: 4,
+        id: 4,
         links:[
         ]
     },

@@ -5,6 +5,8 @@ function Automata() {
   this.graph = new Graph();
   let alfabeto = null;
   const Destados = [];
+  let initialState = 0;
+  let endState = 0;
 
   this.setGraph = (g) => {
     this.graph = new Graph();
@@ -21,8 +23,9 @@ function Automata() {
   };
 
   this.toAfd = () => {
+    console.log(initialState, endState);
     this.graph.unmarkStates();
-    newDestado(cerradura([0]));
+    newDestado(cerradura([initialState]));
 
     while (destadosContainsStateUnmarked()) {
       const T = getUnmarkedState();
@@ -30,6 +33,7 @@ function Automata() {
       const temp = [];
 
       alfabeto.forEach((aEntry) => {
+        // console.log (aEntry, T);
         let U = cerradura(move(T.valor, aEntry));
 
         if (!DestadosContains(U)) {
@@ -43,19 +47,25 @@ function Automata() {
     console.log("Destados", Destados);
     console.log("Dtran", Dtran);
     console.log("fDtran", toFriendlyDtran());
+
     const afdGraph = DtranToGraph(toFriendlyDtran(), alfabeto);
-    console.log(afdGraph.nodes);
+    // console.log(afdGraph.nodes);
     const afd = new Automata();
     afd.setGraph(afdGraph);
     return afd;
   };
+  
+  this.setIniEndStates = (ini,end) => {
+    initialState = ini
+    endState = end
+  }
 
   this.regexToThompson = (entrada) => {
     let index = 0;
     let input = entrada.charAt(index);
 
     const thompson5 = (p1Ini, p1End,p2Ini, p2End) => {
-      console.log(p1Ini, p1End,p2Ini, p2End);
+      // console.log(p1Ini, p1End,p2Ini, p2End);
       let resIni, resEnd
       if(p1Ini==undefined){
         resIni = p2Ini
@@ -70,11 +80,11 @@ function Automata() {
         const endNode = this.graph.getFreeNodeName();
         this.graph.pushNode(endNode);
 
-        this.graph.link(initialNode,p1Ini)
-        this.graph.link(initialNode,p2Ini)
+        this.graph.link(initialNode,p1Ini,epsilon)
+        this.graph.link(initialNode,p2Ini,epsilon)
 
-        this.graph.link(p1End, endNode)
-        this.graph.link(p2End, endNode)
+        this.graph.link(p1End, endNode,epsilon)
+        this.graph.link(p2End, endNode,epsilon)
 
 
         resIni = initialNode
@@ -84,7 +94,7 @@ function Automata() {
     };
 
     const thompson4 = (prevIniNode, prevEndNode) => {
-      console.log(prevIniNode, prevEndNode);
+      // console.log(prevIniNode, prevEndNode);
       const initialNode = this.graph.getFreeNodeName();
       this.graph.pushNode(initialNode);
       const endNode = this.graph.getFreeNodeName();
@@ -98,7 +108,7 @@ function Automata() {
     };
 
     const thompson3 = (p1Ini, p1End,p2Ini, p2End) => {
-      console.log(p1Ini, p1End,p2Ini, p2End);
+      // console.log(p1Ini, p1End,p2Ini, p2End);
       let resIni, resEnd
       if(p1Ini==undefined){
         resIni = p2Ini
@@ -129,7 +139,7 @@ function Automata() {
     };
 
     const joinGraphs = (type, aIni, aEnd, rIni, rEnd) => {
-      console.log(type, aIni, aEnd, rIni, rEnd);
+      // console.log(type, aIni, aEnd, rIni, rEnd);
       if(type == '4'){
         const [_,tIni, tEnd] = thompson4(aIni, aEnd)
         // console.log(tIni, tEnd);
@@ -247,7 +257,8 @@ function Automata() {
         return u()
       }
     };
-    console.log(p());
+    let foo;
+    [foo,initialState,endState] = p()
   };
 
   const newDestado = (state) => {
@@ -277,6 +288,7 @@ function Automata() {
   const _move = (newGraph, element, toMatch = epsilon) => {
     let conjunt = [];
     for (let i = 0; i < element.length; i++) {
+      // console.log(element[i]);
       const node = newGraph.findNode(element[i]);
       if (!node.isVisited) {
         node.isVisited = true;
@@ -301,6 +313,7 @@ function Automata() {
   };
 
   const includeIfnoExists = (conjunt, links) => {
+    // console.log(conjunt,links);
     links.forEach((link) => {
       if (!isIncluded(link, conjunt)) {
         conjunt.push(link);
@@ -319,20 +332,23 @@ function Automata() {
     return e_c(this.graph, conjunt).sort((a, b) => a - b);
   };
 
-  const e_c = (otherGraph, element) => {
-    let conjunt = [];
-    for (let i = 0; i < element.length; i++) {
-      const node = otherGraph.findNode(element[i]);
+  const e_c = (otherGraph, conjunt) => {
+    let newConjunt = [];
+    for (let i = 0; i < conjunt.length; i++) {
+      // console.log(conjunt[i]);
+      const node = otherGraph.findNode(conjunt[i]);
+      // console.log(node);
       if (!node.isVisited) {
         node.isVisited = true;
-        conjunt.push(node.name);
+        newConjunt.push(node.id);
         const links = getEpsilonLinks(node);
+        // console.log(links);
         const childrenConj = e_c(otherGraph, links);
 
-        includeIfnoExists(conjunt, childrenConj);
+        includeIfnoExists(newConjunt, childrenConj);
       }
     }
-    return conjunt;
+    return newConjunt;
   };
 
   const epsilon = "\0";
@@ -342,6 +358,7 @@ function Automata() {
     if (node.links) {
       links = matchesLinks(node, epsilon);
     }
+    // console.log(node,links);
     return links;
   };
 
@@ -367,11 +384,13 @@ function Automata() {
   };
 
   const DtranToGraph = ({ keys, Dtran }, alfabeto) => {
+
     const afdGraph = new Graph();
-    let [[startKey], restKey] = splitStates(keys, 0);
-    const max = getMaxOfKeys(keys);
-    let maxKey;
-    [[maxKey], restKey] = splitStates(restKey, max);
+
+    let [[startKey], restKey] = splitStates(keys, initialState);
+
+    let endKey;
+    [[endKey], restKey] = splitStates(restKey, endState);
 
     afdGraph.pushStateFromKey(Dtran, alfabeto, startKey);
 
@@ -379,20 +398,11 @@ function Automata() {
       afdGraph.pushStateFromKey(Dtran, alfabeto, state);
     });
 
-    // TODO SUMIDERO PARA EL FINAL
-    afdGraph.pushStateFromKey(Dtran, alfabeto, maxKey);
+    // TODO: SUMIDERO PARA EL FINAL
+    afdGraph.pushStateFromKey(Dtran, alfabeto, endKey);
 
+    console.log(initialState, endState);
     return afdGraph;
-  };
-
-  const getMaxOfKeys = (keys) => {
-    let max = 0;
-    keys.forEach((element) => {
-      const array = JSON.parse(element.value);
-      const maxArray = Math.max(...array);
-      if (maxArray > max) max = maxArray;
-    });
-    return max;
   };
 
   const splitStates = (keys, state) => {

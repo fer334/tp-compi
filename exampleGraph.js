@@ -2,7 +2,7 @@ const epsilon = '\0'
 
 const aGraph = [
     {
-        name: 0,
+        id: 0,
         links:[
             {
                 to: 1,
@@ -15,7 +15,7 @@ const aGraph = [
         ]
     },
     {
-        name: 1,
+        id: 1,
         links:[
             {
                 to: 2,
@@ -28,7 +28,7 @@ const aGraph = [
         ]
     },
     {
-        name: 2,
+        id: 2,
         links:[
             {
                 to: 3,
@@ -37,7 +37,7 @@ const aGraph = [
         ]
     },
     {
-        name: 4,
+        id: 4,
         links:[
             {
                 to: 5,
@@ -46,7 +46,7 @@ const aGraph = [
         ]
     },
     {
-        name: 3,
+        id: 3,
         links:[
             {
                 to: 6,
@@ -55,7 +55,7 @@ const aGraph = [
         ]
     },
     {
-        name: 5,
+        id: 5,
         links:[
             {
                 to: 6,
@@ -64,7 +64,7 @@ const aGraph = [
         ]
     },
     {
-        name: 6,
+        id: 6,
         links:[
             {
                 to: 7,
@@ -77,7 +77,7 @@ const aGraph = [
         ]
     },
     {
-        name: 7,
+        id: 7,
         links:[
             {
                 to: 8,
@@ -86,7 +86,7 @@ const aGraph = [
         ]
     },
     {
-        name: 8,
+        id: 8,
         links:[
             {
                 to: 9,
@@ -95,7 +95,7 @@ const aGraph = [
         ]
     },
     {
-        name: 9,
+        id: 9,
         links:[
             {
                 to: 10,
@@ -104,8 +104,8 @@ const aGraph = [
         ]
     },
     {
-        name: 10,
+        id: 10,
     },
 ]
 
-module.exports = aGraph
+export default aGraph
