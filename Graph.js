@@ -37,7 +37,9 @@ class Graph {
     return [nodesDraw, links];
   };
 
-  pushNode = (node) => {
+  pushNode = (name) => {
+    const node = new Node()
+    node.name = name
     this.nodes.push(node);
   };
 
@@ -72,8 +74,34 @@ class Graph {
       node.pushLink(stateNr, letra);
     });
     this.nodes.push(node);
-    console.log(this.nodes);
+    // console.log(this.nodes);
   };
+
+  link = (from, to , value) => {
+    console.log(from,to,value, this.nodes);
+    const iniNode = this.nodes.find(x=>x.name == from)
+    iniNode.pushLink(to,value)
+  }
+
+  getFreeNodeName = () => {
+    let newNodeKey = 0
+    // console.log(this.nodes);
+    let temp = this.nodes.find(x=>x.name == newNodeKey)
+    while(temp !== undefined) {
+      newNodeKey++
+      temp = this.nodes.find(x=>x.name == newNodeKey)
+    }
+    return newNodeKey
+  }
+  RemoveWithCopy = (a, b) => {
+    const aNode = this.nodes.find(x=>x.name == a)
+    const bNode = this.nodes.find(x=>x.name == b)
+    // console.log(aNode, bNode);
+    
+    bNode.links = aNode.links
+    this.nodes = this.nodes.filter(x=>x.name != a)
+  }
+
 }
 
 function Node() {
@@ -129,7 +157,7 @@ const toGraph=(obj)=>{
       node.links?.forEach(link => {
           newNode.pushLink(link.to,link.value)
       });
-      newGraph.pushNode(newNode)
+      newGraph.nodes.push(newNode)
   }
   return newGraph
 } 
