@@ -76,7 +76,7 @@ class Graph {
       node.pushLink(stateNr, letra);
     });
     this.nodes.push(node);
-    // console.log(this.nodes);
+    return state
   };
 
   link = (from, to , value) => {
