@@ -21,32 +21,6 @@ function Automata() {
   this.setAlfabeto = (a) => {
     alfabeto = a;
   };
-  this.test = ()=>{
-    console.log(cerradura([0]));
-    console.log(move([],'a'));
-    // newDestado(cerradura([initialState]));
-    // let T = getUnmarkedState();
-    // markUnmarkedState(T);
-    // let U = cerradura(move(T.valor, 'a'));
-
-
-    // console.log('U',U);
-    // console.log('T',T);
-    // console.log('Destados',Destados);
-    // newDestado(U)
-    // console.log('Destados',Destados);
-    // //
-    // T = getUnmarkedState();
-    // markUnmarkedState(T);
-    // U = cerradura(move(T.valor, 'b'));
-
-
-    // console.log('U',U);
-    // console.log('T',T);
-    // console.log('Destados',Destados);
-    // newDestado(U)
-    // console.log('Destados',Destados);
-  }
 
   this.toAfd = () => {
     this.graph.unmarkStates();
@@ -88,9 +62,9 @@ function Automata() {
     endState = end
   }
 
-  this.regexToThompson = (entrada) => {
+  this.regexToThompson = (regex) => {
     let index = 0;
-    let input = entrada.charAt(index);
+    let input = regex[index]
 
     const thompson5 = (p1Ini, p1End,p2Ini, p2End) => {
       let resIni, resEnd
@@ -176,9 +150,10 @@ function Automata() {
     }
 
     const match = (t) => {
+      // console.log(regex[index]);
       if (input == t) {
         index++;
-        input = entrada.charAt(index);
+        input = regex[index];
       } else {
         throw new Error(`error: recibi ${input} tendria que ser ${t}.`);
       }
@@ -208,7 +183,10 @@ function Automata() {
         // thompson3(tIni,tEnd,sIni,sEnd)
         // return [sIni, rEnd];
       }else{
-        return [undefined, undefined, undefined]
+        // console.log(input);
+        if(input==undefined || input=='(' || input==')')
+          return [undefined, undefined, undefined]
+        match('input')
       }
     };
 
@@ -219,7 +197,7 @@ function Automata() {
     }
 
     const s = () => {
-      // if (alfabeto.includes(input)) {
+      if (alfabeto.includes(input)) {
         
         const [type1,aIni, aEnd] = a();
         let [type2,rIni, rEnd] = u();
@@ -232,11 +210,9 @@ function Automata() {
         // if (rEnd == undefined) return [ini, end];
         // else return [ini, rEnd];
 
-      // } else {
-      //   match("");
-      //   const [rIni, rEnd] = r()
-      //   return [rIni, rEnd];
-      // }
+      } else {
+        match("");
+      }
     };
 
     const u = () => {
@@ -316,9 +292,6 @@ function Automata() {
   };
 
   const move = (T, a) => {
-    if(T.length==0){
-      return []
-    }
     this.graph.unmarkStates();
     return _move(this.graph, T, a);
   };
