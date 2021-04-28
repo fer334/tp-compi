@@ -4,7 +4,7 @@ function Automata() {
   const Dtran = [];
   this.graph = new Graph();
   let alfabeto = null;
-  const Destados = [];
+  let Destados = [];
   let initialState = 0;
   let endState = 0;
 
@@ -21,6 +21,32 @@ function Automata() {
   this.setAlfabeto = (a) => {
     alfabeto = a;
   };
+  this.test = ()=>{
+    console.log(cerradura([0]));
+    console.log(move([],'a'));
+    // newDestado(cerradura([initialState]));
+    // let T = getUnmarkedState();
+    // markUnmarkedState(T);
+    // let U = cerradura(move(T.valor, 'a'));
+
+
+    // console.log('U',U);
+    // console.log('T',T);
+    // console.log('Destados',Destados);
+    // newDestado(U)
+    // console.log('Destados',Destados);
+    // //
+    // T = getUnmarkedState();
+    // markUnmarkedState(T);
+    // U = cerradura(move(T.valor, 'b'));
+
+
+    // console.log('U',U);
+    // console.log('T',T);
+    // console.log('Destados',Destados);
+    // newDestado(U)
+    // console.log('Destados',Destados);
+  }
 
   this.toAfd = () => {
     this.graph.unmarkStates();
@@ -34,7 +60,7 @@ function Automata() {
       alfabeto.forEach((aEntry) => {
         let U = cerradura(move(T.valor, aEntry));
 
-        if (!DestadosContains(U)) {
+        if (!DestadosContains(U)&& U.length!=0) {
           newDestado(U);
         }
         temp.push(U);
@@ -42,8 +68,15 @@ function Automata() {
       Dtran.push(temp);
     }
 
+    // console.log(Destados);
+    // console.log(Dtran);
+    let friendlyDtran = toFriendlyDtran(Dtran)
+    console.log(friendlyDtran,Dtran);
+    const [minDtran,minKeys] = minimize(friendlyDtran,alfabeto)
+    friendlyDtran = toFriendlyDtran(minDtran,minKeys)
+    console.log(friendlyDtran,minDtran);
 
-    const [newIniState,newEndState,afdGraph] = DtranToGraph(toFriendlyDtran(), alfabeto);
+    const [newIniState,newEndState,afdGraph] = DtranToGraph(friendlyDtran, alfabeto);
     const afd = new Automata();
     afd.setGraph(afdGraph);
     afd.setIniEndStates(newIniState,newEndState)
@@ -259,6 +292,10 @@ function Automata() {
     }
   }
 
+  this.getDestados=()=>{
+    return Destados
+  }
+
   const newDestado = (state) => {
     Destados.push({
       marca: false,
@@ -271,7 +308,7 @@ function Automata() {
   };
 
   const getUnmarkedState = () => {
-    return Destados.find((x) => x.marca === false);
+    return Destados.find((x) => x.marca === false && x.valor.length!=0);
   };
 
   const markUnmarkedState = (T) => {
@@ -279,6 +316,9 @@ function Automata() {
   };
 
   const move = (T, a) => {
+    if(T.length==0){
+      return []
+    }
     this.graph.unmarkStates();
     return _move(this.graph, T, a);
   };
@@ -358,20 +398,26 @@ function Automata() {
     return JSON.stringify(Destados).includes(JSON.stringify(state));
   };
 
-  const toFriendlyDtran = () => {
+  const toFriendlyDtran = (Dtran, keys) => {
     const friendlyDtran = [];
-    const keys = Destados.map((state, index) => {
+    if(keys){
+      Destados = keys.map(x=>({valor: JSON.parse(x.value)}))
+    }
+    keys = Destados.map((state, index) => {
       return {
         key: String.fromCharCode(65 + index),
         value: JSON.stringify(state.valor),
       };
     });
+    
+    
     Dtran.forEach((row) => {
       const newrow = row.map((column) => {
         return keys.find((x) => x.value == JSON.stringify(column))?.key;
       });
       friendlyDtran.push(newrow);
     });
+    // console.log(Dtran);
     return { keys: keys, Dtran: friendlyDtran };
   };
 
@@ -384,7 +430,7 @@ function Automata() {
     let endKey;
     [[endKey], restKey] = splitStates(restKey, endState);
 
-    const newIniState =afdGraph.pushStateFromKey(Dtran, alfabeto, startKey);
+    const newIniState = afdGraph.pushStateFromKey(Dtran, alfabeto, startKey);
 
     restKey.forEach((state) => {
       afdGraph.pushStateFromKey(Dtran, alfabeto, state);
@@ -404,6 +450,111 @@ function Automata() {
       }),
     ];
   };
+
+  const split = (string, splitValue) => {
+    
+    const rString = string.replaceAll(splitValue,'')
+    return [splitValue, rString]
+  }
+
+  const minimize = ({ keys, Dtran }, alfabeto) => {
+    
+    let pi = []
+    let [[endStateKey], _] = splitStates(keys, endState);
+    endStateKey=endStateKey.key
+    
+    const onlyKeyValue =  keys.map(x=>x.key).reduce((pre,curr)=>pre+curr,"")
+    
+    const [startKey, restKey] = split(onlyKeyValue,endStateKey)
+    
+    
+    // let [startKey, restKey] = splitStates(keys, endState);
+    pi.push(startKey, restKey)
+
+    // console.log(keys, Dtran,endState);
+    // console.log(pi);
+    let isUpdated = true
+    while(isUpdated){
+      isUpdated = false
+      pi.forEach(conjunt => {
+        if (conjunt.length != 1 ){
+          alfabeto.forEach((link,dtranIndex) => {
+            const goTos = []
+            for (let eleIndex = 0; eleIndex < conjunt.length; eleIndex++) {
+              const actualElement=conjunt[eleIndex]
+              const actualElementIndex = actualElement.charCodeAt()-65
+              const goTo = Dtran[actualElementIndex][dtranIndex];
+              goTos.push([ pi.find(x=>x.includes(goTo)),actualElement])
+
+              // if(!conjunt.includes(goTo)){
+              //   const newsConjunts = split(conjunt,actualElement)
+              //   pi=pi.filter(x=>x!=conjunt)
+              //   pi.push(...newsConjunts)
+              //   isUpdated = true
+              // }
+            }
+
+            let prev = goTos[0]
+            goTos.forEach(curr => {
+              if(prev[0]!=curr[0]){
+                const actualElement = curr[1]
+                const newsConjunts = split(conjunt,actualElement)
+                pi=pi.filter(x=>x!=conjunt)
+                pi.push(...newsConjunts)
+                isUpdated = true
+              }else{
+                prev=curr
+              }
+            });
+          });
+          
+        }
+      });
+    }
+    const newDtran = []
+    const newKeys = []
+    pi.sort((a,b)=>a-b)
+
+    pi.forEach((element,index) => {
+      const key = keys.findIndex(x=>x.key==element.split('')[0])
+      newKeys.push({
+        key: element,
+        value: keys[key].value ,
+      })
+    });
+
+    // console.log(Dtran);
+    pi.forEach(element => {
+      const key = keys.findIndex(x=>x.key==element.split('')[0])
+      const row = []
+      Dtran[key].forEach(element => {
+        const columnName = newKeys.find(x=>x.key.includes(element))
+        // console.log(columnName);
+        if(columnName)
+          row.push(JSON.parse(columnName.value))
+        else
+          row.push(undefined)
+      });
+      newDtran.push(row)
+    });
+    // pi.forEach(state => {
+    //   const stateArray = state.split('')
+    //   if(stateArray.length!=1){
+    //     stateArray.forEach((toDel,charIndex) => {
+    //       if(charIndex!=0){
+    //         console.log('To del',toDel);
+    //         const keysIndex=keys.findIndex(x=>x.key==toDel)
+    //         keys = keys.filter((_,i)=>keysIndex!=i)
+    //         Dtran = Dtran.filter((_,i)=>keysIndex!=i)
+    //       }
+    //     });
+    //   }
+    // });
+    
+    // console.log(pi,Dtran,keys,);
+    // console.log(pi,newDtran,newKeys,);
+    return [newDtran, newKeys] 
+  }
 }
 
 export default Automata;

@@ -65,6 +65,7 @@ class Graph {
   };
 
   pushStateFromKey = (Dtran, alfabeto, key) => {
+    console.log(Dtran,key);
     const getNrState = (key) => {
       return key.charCodeAt(0) - 65;
     };
@@ -72,8 +73,11 @@ class Graph {
     const node = new Node();
     node.setName(state);
     alfabeto.forEach((letra, i) => {
-      const stateNr = getNrState(Dtran[state][i]);
-      node.pushLink(stateNr, letra);
+      console.log(state,letra,i,Dtran[state][i]);
+      if(Dtran[state][i]){
+        const stateNr = getNrState(Dtran[state][i]);
+        node.pushLink(stateNr, letra);
+      }
     });
     this.nodes.push(node);
     return state
