@@ -45,10 +45,10 @@ function Automata() {
     // console.log(Destados);
     // console.log(Dtran);
     let friendlyDtran = toFriendlyDtran(Dtran)
-    console.log(friendlyDtran,Dtran);
+    // console.log(friendlyDtran,Dtran);
     const [minDtran,minKeys] = minimize(friendlyDtran,alfabeto)
     friendlyDtran = toFriendlyDtran(minDtran,minKeys)
-    console.log(friendlyDtran,minDtran);
+    // console.log(friendlyDtran,minDtran);
 
     const [newIniState,newEndState,afdGraph] = DtranToGraph(friendlyDtran, alfabeto);
     const afd = new Automata();
@@ -253,10 +253,12 @@ function Automata() {
 
   this.run = (entry) => {
     let s = 0;
+    // console.log( move([s],entry));
     let c = 0;
     while(c != entry.length){
       this.graph.unmarkStates();
-      [s] = move([s],entry.charAt(c))
+      // console.log(entry);
+      [s] = move([s],entry[c])
       c++
     }
     if(s == endState){
@@ -386,6 +388,8 @@ function Automata() {
     
     Dtran.forEach((row) => {
       const newrow = row.map((column) => {
+        // console.log(keys);
+        // console.log(keys.find((x) => x.value == JSON.stringify(column))?.key);
         return keys.find((x) => x.value == JSON.stringify(column))?.key;
       });
       friendlyDtran.push(newrow);
@@ -452,33 +456,31 @@ function Automata() {
       pi.forEach(conjunt => {
         if (conjunt.length != 1 ){
           alfabeto.forEach((link,dtranIndex) => {
-            const goTos = []
-            for (let eleIndex = 0; eleIndex < conjunt.length; eleIndex++) {
-              const actualElement=conjunt[eleIndex]
-              const actualElementIndex = actualElement.charCodeAt()-65
-              const goTo = Dtran[actualElementIndex][dtranIndex];
-              goTos.push([ pi.find(x=>x.includes(goTo)),actualElement])
-
-              // if(!conjunt.includes(goTo)){
-              //   const newsConjunts = split(conjunt,actualElement)
-              //   pi=pi.filter(x=>x!=conjunt)
-              //   pi.push(...newsConjunts)
-              //   isUpdated = true
-              // }
-            }
-
-            let prev = goTos[0]
-            goTos.forEach(curr => {
-              if(prev[0]!=curr[0]){
-                const actualElement = curr[1]
-                const newsConjunts = split(conjunt,actualElement)
-                pi=pi.filter(x=>x!=conjunt)
-                pi.push(...newsConjunts)
-                isUpdated = true
-              }else{
-                prev=curr
+            if(!isUpdated){
+              const goTos = []
+              for (let eleIndex = 0; eleIndex < conjunt.length; eleIndex++) {
+                const actualElement=conjunt[eleIndex]
+                const actualElementIndex = actualElement.charCodeAt()-65
+                const goTo = Dtran[actualElementIndex][dtranIndex];
+                // console.log(goTo);
+                // if()
+                goTos.push([ pi.find(x=>x.includes(goTo)),actualElement])
               }
-            });
+  
+              let prev = goTos[0]
+              // console.log(goTos);
+              goTos.forEach(curr => {
+                if(prev[0]!=curr[0]){
+                  const actualElement = curr[1]
+                  const newsConjunts = split(conjunt,actualElement)
+                  pi=pi.filter(x=>x!=conjunt)
+                  pi.push(...newsConjunts)
+                  isUpdated = true
+                }else{
+                  prev=curr
+                }
+              });
+            }
           });
           
         }
@@ -515,7 +517,7 @@ function Automata() {
     //   if(stateArray.length!=1){
     //     stateArray.forEach((toDel,charIndex) => {
     //       if(charIndex!=0){
-    //         console.log('To del',toDel);
+            // console.log('To del',toDel);
     //         const keysIndex=keys.findIndex(x=>x.key==toDel)
     //         keys = keys.filter((_,i)=>keysIndex!=i)
     //         Dtran = Dtran.filter((_,i)=>keysIndex!=i)
