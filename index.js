@@ -26,18 +26,26 @@ import Graph from './Graph.js'
     // return newstring;
 // const regex = ['(','alba','|','buitre',')','*','alba'] 
 // const regex = ['(','aguila','|','buitre',')','*','aguila','buitre','buitre'] 
-const regex = ['(','aguila','buitre',')'] 
-// const regex = ['aguila','buitre'] 
+// const regex = ['(','aguila','buitre',')'] 
+const regex = ['aguila','buitre'] 
 // regex.slice()
 
 const afn = new Automata()
 afn.setAlfabeto(['aguila','buitre'])
-afn.regexToThompson(regex)
+afn.regexDefToGraph([
+    {leftSide: 'Animales', rightSide: regex},
+    {leftSide: 'Paises', rightSide: ['buitre','aguila']},
+])
+// afn.regexToThompson('Animales',regex)
+// afn.regexToThompson(['(','buitre','aguila',')'])
+
+// EF finale
 
 const afd = afn.toAfd();
 
 const [nodes,links] = Graph.toDraw(afd.graph.nodes);
+// const [nodes,links] = Graph.toDraw(afn.graph.nodes);
 makeGraph(nodes,links)
 
 // const entrada = stringToArrayList('')
-afd.run('aguila buitre'.split(' ')) 
+afd.run('aguila buitre buitre'.split(' ')) 

@@ -64,23 +64,32 @@ class Graph {
     this.nodes.map((x) => (x.isVisited = false));
   };
 
-  pushStateFromKey = (Dtran, alfabeto, key) => {
-    // console.log(Dtran,key);
+  pushStateFromKey = (keys, Dtran, alfabeto, key) => {
+    // console.log(Dtran,key,keys);
     const getNrState = (key) => {
       return key.charCodeAt(0) - 65;
     };
+    const isVacio =(char) => {
+      // console.log(keys,keys.find(x=>x.value=='[]'), char);
+      return char === keys.find(x=>x.value=='[]')?.key
+    }
     const state = getNrState(key.key);
-    const node = new Node();
-    node.setName(state);
-    alfabeto.forEach((letra, i) => {
-      // console.log(state,letra,i,Dtran[state][i]);
-      if(Dtran[state][i]){
-        const stateNr = getNrState(Dtran[state][i]);
-        node.pushLink(stateNr, letra);
-      }
-    });
-    this.nodes.push(node);
-    return state
+    if(Dtran[state].some(x=>!isVacio(x))){
+
+      const node = new Node();
+      node.setName(state);
+      alfabeto.forEach((letra, i) => {
+        // console.log(state,letra,i,Dtran[state][i],isVacio(Dtran[state][i]));
+        if(!isVacio(Dtran[state][i])){
+          const stateNr = getNrState(Dtran[state][i]);
+          node.pushLink(stateNr, letra);
+        }
+      });
+      this.nodes.push(node);
+      return state
+    }else{
+      Error('Deberia ser un nodo ni final ni inicial')
+    }
   };
 
   link = (from, to , value) => {
