@@ -18,6 +18,7 @@ class Graph {
   }
 
   static toDraw = (GraphNodes) => {
+    // console.log(GraphNodes);
     const nodesDraw = {};
     GraphNodes.forEach((node,index) => {
       // console.log(index,node.id);
@@ -64,31 +65,38 @@ class Graph {
     this.nodes.map((x) => (x.isVisited = false));
   };
 
-  pushStateFromKey = (keys, Dtran, alfabeto, key) => {
+  pushStateFromKey = (offset,keys, Dtran, alfabeto, key) => {
     // console.log(Dtran,key,keys);
     const getNrState = (key) => {
-      return key.charCodeAt(0) - 65;
+      return keys.findIndex((x)=>x.key==key)
     };
     const isVacio =(char) => {
       // console.log(keys,keys.find(x=>x.value=='[]'), char);
       return char === keys.find(x=>x.value=='[]')?.key
     }
     const state = getNrState(key.key);
-    if(Dtran[state].some(x=>!isVacio(x))){
 
+    if(Dtran[state].some(x=>!isVacio(x))){
+      let lastLink
+
+      // console.log(key);
       const node = new Node();
-      node.setName(state);
+      node.setName(state+offset);
       alfabeto.forEach((letra, i) => {
         // console.log(state,letra,i,Dtran[state][i],isVacio(Dtran[state][i]));
         if(!isVacio(Dtran[state][i])){
           const stateNr = getNrState(Dtran[state][i]);
-          node.pushLink(stateNr, letra);
+          node.pushLink(stateNr+offset, letra);
+          lastLink = stateNr
         }
       });
       this.nodes.push(node);
-      return state
+      // console.log(state,lastLink);
+      return [state,lastLink]
     }else{
-      Error('Deberia ser un nodo ni final ni inicial')
+      return [undefined,undefined]
+      // console.log(key.key);
+      Error('No deberia ser un nodo ni final ni inicial')
     }
   };
 

@@ -25,27 +25,33 @@ import Graph from './Graph.js'
     // var newstring = newstringreplaced.split(",");
     // return newstring;
 // const regex = ['(','alba','|','buitre',')','*','alba'] 
-// const regex = ['(','aguila','|','buitre',')','*','aguila','buitre','buitre'] 
+const regex = ['(','aguila','|','buitre',')','*','aguila','buitre','buitre'] 
 // const regex = ['(','aguila','buitre',')'] 
-const regex = ['aguila','buitre'] 
+// const regex = ['aguila','buitre'] 
 // regex.slice()
 
-const afn = new Automata()
-afn.setAlfabeto(['aguila','buitre'])
-afn.regexDefToGraph([
+const regexDefs = new Automata()
+
+
+
+regexDefs.setAlfabeto(['aguila','buitre'])
+regexDefs.regexDefToGraph([
     {leftSide: 'Animales', rightSide: regex},
     {leftSide: 'Paises', rightSide: ['buitre','aguila']},
+    {leftSide: 'Pais', rightSide: ['aguila','buitre']},
 ])
-// afn.regexToThompson('Animales',regex)
-// afn.regexToThompson(['(','buitre','aguila',')'])
+// regexDefs.regexToThompson('Animales',regex)
+// regexDefs.regexToThompson(['(','buitre','aguila',')'])
 
-// EF finale
+// Estaba transformando toafd para que haga es nomas y me faltaba pasar del DTran al grafo
 
-const afd = afn.toAfd();
+// const afd = regexDefs.toAfd();
 
-const [nodes,links] = Graph.toDraw(afd.graph.nodes);
+const [nodes,links] = Graph.toDraw(regexDefs.graph.nodes);
 // const [nodes,links] = Graph.toDraw(afn.graph.nodes);
 makeGraph(nodes,links)
 
 // const entrada = stringToArrayList('')
-afd.run('aguila buitre buitre'.split(' ')) 
+// regexDefs.run('aguila buitre buitre'.split(' ')) 
+regexDefs.run(['buitre', 'aguila']) 
+

@@ -1,13 +1,14 @@
 import Graph from "./Graph.js";
 
 function Automata() {
-  const Dtran = [];
   this.graph = new Graph();
   let alfabeto = null;
-  let Destados = [];
-  let initialState = 0;
-  let endState = 0;
+  let lastState=0;
+  const epsilon = "\0";
   const endStateList = []
+  let finalDtranDestados = []
+  let regexDefList = []
+  let initialState
 
   this.setGraph = (g) => {
     this.graph = new Graph();
@@ -23,10 +24,122 @@ function Automata() {
     alfabeto = a;
   };
 
-  this.toAfd = () => {
-    console.log(initialState,endState)
+  const toAfd = (initialState,endState) => {
+    let Destados = [];
+    const Dtran = [];
+
+    const newDestado = (state) => {
+      Destados.push({
+        marca: false,
+        valor: state,
+      });
+    };
+
+    const destadosContainsStateUnmarked = () => {
+      return Destados.some((state) => state.marca === false);
+    };
+
+    const getUnmarkedState = () => {
+      return Destados.find((x) => x.marca === false);
+    };
+
+    const markUnmarkedState = (T) => {
+      T.marca = true;
+    };
+
+    const move = (T, a) => {
+      this.graph.unmarkStates();
+      return _move(this.graph, T, a);
+    };
+
+    const _move = (newGraph, element, toMatch = epsilon) => {
+      let conjunt = [];
+      for (let i = 0; i < element.length; i++) {
+        const node = newGraph.findNode(element[i]);
+        if (!node.isVisited) {
+          node.isVisited = true;
+          const links = getMatchesLinks(node, toMatch);
+          includeIfnoExists(conjunt, links);
+        }
+      }
+      return conjunt;
+    };
+
+    const getMatchesLinks = (node, a) => {
+      let links = [];
+      if (node.links) {
+        links = matchesLinks(node, a);
+      }
+      return links;
+    };
+
+    const matchesLinks = (node, toMatch) => {
+      const onlyMatchesLink = node.links.filter((x) => x.value == toMatch);
+      return onlyMatchesLink.map((x) => x.to);
+    };
+
+    const includeIfnoExists = (conjunt, links) => {
+      links.forEach((link) => {
+        if (!isIncluded(link, conjunt)) {
+          conjunt.push(link);
+        }
+      });
+    };
+
+    const isIncluded = (element, list) => {
+      list.forEach((aElement) => {
+        return aElement == element;
+      });
+    };
+
+    const cerradura = (conjunt) => {
+      this.graph.unmarkStates();
+      return e_c(this.graph, conjunt).sort((a, b) => a - b);
+    };
+
+    const e_c = (otherGraph, conjunt) => {
+      let newConjunt = [];
+      for (let i = 0; i < conjunt.length; i++) {
+        // console.log(this.graph.nodes);
+        const node = otherGraph.findNode(conjunt[i]);
+        if (!node.isVisited) {
+          node.isVisited = true;
+          newConjunt.push(node.id);
+          const links = getEpsilonLinks(node);
+          const childrenConj = e_c(otherGraph, links);
+
+          includeIfnoExists(newConjunt, childrenConj);
+        }
+      }
+      return newConjunt;
+    };
+
+    const getEpsilonLinks = (node) => {
+      let links = [];
+      if (node.links) {
+        links = matchesLinks(node, epsilon);
+      }
+      return links;
+    };
+
+    const DestadosContains = (state) => {
+      return JSON.stringify(Destados).includes(JSON.stringify(state));
+    };
+
+    const deleteNodesFrom = (parents) => {
+      // console.log(Destados);
+      const allNodes = Destados.reduce((prev,curr)=>{
+        return curr=[...prev,...curr.valor]
+      },[]);
+      this.graph.nodes = this.graph.nodes.filter(x=>!allNodes.includes(x.id))
+      // console.log(this.graph.nodes);
+    }
+
+    // console.log(initialState,endState)
+    console.log(this.graph.nodes);
     this.graph.unmarkStates();
     newDestado(cerradura([initialState]));
+    // console.log(Destados);
 
     while (destadosContainsStateUnmarked()) {
       const T = getUnmarkedState();
@@ -44,21 +157,51 @@ function Automata() {
       Dtran.push(temp);
     }
 
-    console.log(Destados);
-    console.log(Dtran,endState);
-    let friendlyDtran = toFriendlyDtran(Dtran)
-    console.log(friendlyDtran, endState);
-    const [minDtran,minKeys] = minimize(friendlyDtran,alfabeto)
-    friendlyDtran = toFriendlyDtran(minDtran,minKeys)
-    console.log(friendlyDtran,minDtran);
-    console.log(initialState,endState);
+    
+    Destados = Destados.map((x,i)=>{return{
+      marca:x.marca,
+      valor:x.valor,
+      key: String.fromCharCode(65 + i),
+      value: JSON.stringify(x.valor),
+    }})
+    // console.log(Destados);
+    
+    deleteNodesFrom([initialState])
 
-    const [newIniState,newEndState,afdGraph] = DtranToGraph(friendlyDtran, alfabeto);
-    const afd = new Automata();
-    afd.setGraph(afdGraph);
-    console.log(initialState,endState);
-    afd.setIniEndStates(newIniState,newEndState)
-    return afd;
+    // console.log(Dtran,endState);
+    const graphProps = {
+      initialState: initialState,
+      endState: endState,
+      Dtran: Dtran,
+      Destados: Destados
+    }
+
+    // console.log(graphProps);
+    // const [newIniState,newEndState] = DtranToGraph(graphProps);
+    // console.log(newIniState,newEndState);
+    // const afd = new Automata();
+    // afd.setGraph(afdGraph);
+    // console.log(initialState,endState);
+    // afd.setIniEndStates(newIniState,newEndState)
+    // return afd;
+
+    console.log(Dtran);
+    return graphProps;
+  };
+
+  const toFriendlyDtran = (Dtran, keys) => {
+    const friendlyDtran = [];
+    
+    Dtran.forEach((row) => {
+      const newrow = row.map((column) => {
+        // console.log(keys);
+        // console.log(keys.find((x) => x.value == JSON.stringify(column))?.key);
+        return keys.find((x) => x.value == JSON.stringify(column))?.key;
+      });
+      friendlyDtran.push(newrow);
+    });
+    // console.log(Dtran);
+    return { keys: keys, Dtran: friendlyDtran };
   };
   
   this.setIniEndStates = (ini,end) => {
@@ -71,14 +214,19 @@ function Automata() {
     defList.forEach(regexDef => {
       // console.log(regexDef);
       const regexDefGraphProps = regexToThompson(regexDef.rightSide)
+      const {initialState,endState} = toAfdMinimized(regexDefGraphProps.initialState,regexDefGraphProps.endState)
+      lastState = endState+1
+      // console.log(lastState);
       graphsProps.push({
-        initialState: regexDefGraphProps.initialState,
-        endState: regexDefGraphProps.endState,
+        initialState: initialState,
+        endState: endState,
         leftSide: regexDef.leftSide
       })
     });
+    console.log(graphsProps);
     let aIni,aEnd,bIni,bEnd
-    graphsProps.forEach((regexGraph,index)=>{
+    for (let index = 0; index < graphsProps.length; index++) {
+      const regexGraph = graphsProps[index];
       if(index==0){
         aIni = bIni = regexGraph.initialState
         aEnd = bEnd = regexGraph.endState
@@ -89,12 +237,32 @@ function Automata() {
         aIni = joinReturn[0]
         aEnd = joinReturn[1][1]
       }
+      if(!this.graph.findNode(bEnd)) this.graph.pushNode(bEnd)
+      // console.log(this.graph.nodes);
       
-      // console.log(aIni,aEnd,bIni,bEnd);
+    }
+    // console.log(aIni,aEnd,bIni,bEnd);
+    const afd = toAfd(aIni,3)
+    initialState = afd.initialState
+    finalDtranDestados = {Dtran:afd.Dtran, Destados:afd.Destados}
+    regexDefList = graphsProps
+    
+    DtranToGraph({
+      initialState: afd.initialState,
+      endState: afd.endState,
+      Dtran: afd.Dtran,
+      keys: afd.Destados
     })
-    // console.log(graphsProps);
-    initialState = aIni
-    endState = aEnd
+    // console.log(this.graph.nodes);
+    
+  }
+
+  const toAfdMinimized = (initialState, endState) => {
+    const afd = toAfd(initialState,endState);
+    const minAfd = minimize(afd);
+    // console.log(minAfd);
+    [initialState, endState] = DtranToGraph(minAfd);
+    return {initialState, endState}
   }
 
   const thompson5WithoutEnd = (p1Ini, p1End, p2Ini, p2End) => {
@@ -314,22 +482,41 @@ function Automata() {
     return {initialState:pReturn[1], endState:pReturn[2]}
   };
 
-  this.run = (entry) => {
-    let s = 0;
-    // console.log( move([s],entry));
+  this.run = (input) => {
+    const {Dtran,Destados} = finalDtranDestados
+    // console.log(finalDtranDestados);
+    // console.log(regexDefList);
+
+    const move = (state, input ) => {
+      const inputIndex = alfabeto.findIndex(x=>x==input)
+      const row = Destados.findIndex(x=>x.value.includes(state)) 
+      console.log(row,inputIndex,Dtran[row][inputIndex]);      
+      return Dtran[row][inputIndex]
+    }
+
+    
+    let s = initialState;
+    console.log(Dtran,Destados);
+    console.log(s);
+    // console.log( move([s],input));
     let c = 0;
-    while(c != entry.length){
-      this.graph.unmarkStates();
-      // console.log(entry);
-      [s] = move([s],entry[c])
+    while(c != input.length){
+      console.log(input[c]);
+      s = move(s,input[c])
       c++
     }
-    if(s == endState){
-      console.log('si');
-      return true
+    console.log(s, regexDefList);
+    let endState;
+    s.forEach(y=>{
+      if(!endState)
+        endState = regexDefList.find(x=>x.endState==y) 
+
+    })
+    // console.log(endState);
+    if(endState){
+      console.log(endState.leftSide);
     }else{
       console.log('no');
-      return false
     }
   }
 
@@ -337,134 +524,13 @@ function Automata() {
     return Destados
   }
 
-  const newDestado = (state) => {
-    Destados.push({
-      marca: false,
-      valor: state,
-    });
-  };
-
-  const destadosContainsStateUnmarked = () => {
-    return Destados.some((state) => state.marca === false);
-  };
-
-  const getUnmarkedState = () => {
-    return Destados.find((x) => x.marca === false);
-  };
-
-  const markUnmarkedState = (T) => {
-    T.marca = true;
-  };
-
-  const move = (T, a) => {
-    this.graph.unmarkStates();
-    return _move(this.graph, T, a);
-  };
-
-  const _move = (newGraph, element, toMatch = epsilon) => {
-    let conjunt = [];
-    for (let i = 0; i < element.length; i++) {
-      const node = newGraph.findNode(element[i]);
-      if (!node.isVisited) {
-        node.isVisited = true;
-        const links = getMatchesLinks(node, toMatch);
-        includeIfnoExists(conjunt, links);
-      }
-    }
-    return conjunt;
-  };
-
-  const getMatchesLinks = (node, a) => {
-    let links = [];
-    if (node.links) {
-      links = matchesLinks(node, a);
-    }
-    return links;
-  };
-
-  const matchesLinks = (node, toMatch) => {
-    const onlyMatchesLink = node.links.filter((x) => x.value == toMatch);
-    return onlyMatchesLink.map((x) => x.to);
-  };
-
-  const includeIfnoExists = (conjunt, links) => {
-    links.forEach((link) => {
-      if (!isIncluded(link, conjunt)) {
-        conjunt.push(link);
-      }
-    });
-  };
-
-  const isIncluded = (element, list) => {
-    list.forEach((aElement) => {
-      return aElement == element;
-    });
-  };
-
-  const cerradura = (conjunt) => {
-    this.graph.unmarkStates();
-    return e_c(this.graph, conjunt).sort((a, b) => a - b);
-  };
-
-  const e_c = (otherGraph, conjunt) => {
-    let newConjunt = [];
-    for (let i = 0; i < conjunt.length; i++) {
-      const node = otherGraph.findNode(conjunt[i]);
-      if (!node.isVisited) {
-        node.isVisited = true;
-        newConjunt.push(node.id);
-        const links = getEpsilonLinks(node);
-        const childrenConj = e_c(otherGraph, links);
-
-        includeIfnoExists(newConjunt, childrenConj);
-      }
-    }
-    return newConjunt;
-  };
-
-  const epsilon = "\0";
-
-  const getEpsilonLinks = (node) => {
-    let links = [];
-    if (node.links) {
-      links = matchesLinks(node, epsilon);
-    }
-    return links;
-  };
-
-  const DestadosContains = (state) => {
-    return JSON.stringify(Destados).includes(JSON.stringify(state));
-  };
-
-  const toFriendlyDtran = (Dtran, keys) => {
-    const friendlyDtran = [];
-    if(keys){
-      Destados = keys.map(x=>({valor: JSON.parse(x.value)}))
-    }
-    keys = Destados.map((state, index) => {
-      return {
-        key: String.fromCharCode(65 + index),
-        value: JSON.stringify(state.valor),
-      };
-    });
-    
-    
-    Dtran.forEach((row) => {
-      const newrow = row.map((column) => {
-        // console.log(keys);
-        // console.log(keys.find((x) => x.value == JSON.stringify(column))?.key);
-        return keys.find((x) => x.value == JSON.stringify(column))?.key;
-      });
-      friendlyDtran.push(newrow);
-    });
-    // console.log(Dtran);
-    return { keys: keys, Dtran: friendlyDtran };
-  };
-
-  const DtranToGraph = ({ keys, Dtran }, alfabeto) => {
-
+  const DtranToGraph = (props) => {
+    // console.log(props);
+    const {keys,Dtran} = toFriendlyDtran(props.Dtran,props.keys)
+    const initialState = props.initialState
+    const endState = props.endState
     // console.log(initialState,endState,Dtran,keys);
-    const afdGraph = new Graph();
+    const afdGraph = this.graph;
 
     let [[startKey], restKey] = splitStates(keys, initialState);
     // console.log(startKey);
@@ -472,20 +538,28 @@ function Automata() {
     let endKey;
     [[endKey], restKey] = splitStates(restKey, endState);
 
-    const newIniState = afdGraph.pushStateFromKey(keys, Dtran, alfabeto, startKey);
-
+    const [newIniState,_] = afdGraph.pushStateFromKey(lastState,keys, Dtran, alfabeto, startKey);
+    // console.log(newIniState);
+    let newEndState
     restKey.forEach((state) => {
-      afdGraph.pushStateFromKey(keys, Dtran, alfabeto, state);
+      const temp = afdGraph.pushStateFromKey(lastState,keys, Dtran, alfabeto, state);
+      if (temp[1]) newEndState = temp[1]
     });
 
     // TODO: SUMIDERO PARA EL FINAL
-    const newEndState = afdGraph.pushStateFromKey(keys, Dtran, alfabeto, endKey);
+    const temp = afdGraph.pushStateFromKey(lastState,keys, Dtran, alfabeto, endKey);
+    if (temp) newEndState = temp
+    // console.log(temp);
+    // console.log(newIniState, newEndState);
+    // console.log(afdGraph);
+    // console.log(endKey);
+    newEndState = keys.findIndex(x=>x.key==endKey.key)
 
-    return [newIniState, newEndState, afdGraph];
+    return [newIniState+lastState, newEndState+lastState];
   };
 
   const splitStates = (keys, state) => {
-    console.log(state, keys.filter((x) => JSON.parse(x.value).some((y) => y == state)));
+    // console.log(state, keys.filter((x) => JSON.parse(x.value).some((y) => y == state)));
     return [
       keys.filter((x) => JSON.parse(x.value).some((y) => y == state)),
       keys.filter((x) => {
@@ -501,17 +575,21 @@ function Automata() {
     return [splitValue, rString]
   }
 
-  const minimize = ({ keys, Dtran }, alfabeto) => {
-    
+  const minimize = (graphProps) => {
+    const initialState  = graphProps.initialState
+    const endState  = graphProps.endState
+    const {Dtran, keys}  = toFriendlyDtran(graphProps.Dtran, graphProps.Destados)
+    // console.log( initialState, endState, Dtran, keys);
+
     let pi = []
-    console.log(endState);
+    // console.log(endState);
     let [endStateKey, _] = splitStates(keys, endState);
-    console.log( splitStates(keys, endState));
+    // console.log( splitStates(keys, endState));
     
     const onlyKeysValueEndState = endStateKey.map(x=>x.key).reduce((pre,curr)=>pre+curr,"")
     const onlyKeysValue = keys.map(x=>x.key).reduce((pre,curr)=>pre+curr,"")
     
-    console.log(onlyKeysValueEndState);
+    // console.log(onlyKeysValueEndState);
     const [startKey, restKey] = split(onlyKeysValue,onlyKeysValueEndState)
     
     
@@ -519,7 +597,7 @@ function Automata() {
     pi.push(startKey, restKey)
 
     // console.log(keys, Dtran,endState);
-    console.log(pi);
+    // console.log(pi,keys,Dtran);
     let isUpdated = true
     while(isUpdated){
       isUpdated = false
@@ -565,7 +643,8 @@ function Automata() {
     }
     const newDtran = []
     const newKeys = []
-    pi.sort((a,b)=>a-b)
+    pi = pi.sort((a,b)=>a.charCodeAt(0)-b.charCodeAt(0))
+    // console.log(pi);
 
     pi.forEach((element,index) => {
       const key = keys.findIndex(x=>x.key==element.split('')[0])
@@ -592,7 +671,12 @@ function Automata() {
     
     // console.log(pi,Dtran,keys,);
     // console.log(pi,newDtran,newKeys,);
-    return [newDtran, newKeys] 
+    return {
+      initialState:initialState,
+      endState: endState, 
+      Dtran: newDtran, 
+      keys:newKeys
+    } 
   }
 }
 
