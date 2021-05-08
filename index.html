@@ -1,13 +1,33 @@
-<html>
-    <head>
-        <title>D3 Force Layout Example 1</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="main.css">
-        <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
-    </head>
-    <body>
-        <script type="module" src="index.js"></script>
-    </body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="main.css">
+    <title>TP Compiladores</title>
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="">
+            <div class="">
+                <input type="text" id="alphabet" placeholder="Alphabet"/><br/><br/>
+                <textarea name="" id="defs" cols="30" rows="10"></textarea>
+                <!--
+                <input type="text" id="regexInput" placeholder="Definicion regular" /><br/><br/>
+                <input type="text" id="stringInput" placeholder="Cadena de prueba" /><br/><br/>
+                -->
+                <button id="generateButton">Generate AFD</button>
+            </div>
+            <div class="" style="margin-top: 4rem;">
+                <input type="text" id="input" placeholder="Input"/><br/><br/>
+                <button id="runButton">Test AFD</button>
+                <div id="result" style="background-color: aqua;"></div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="index.js"></script>
+
+</body>
 </html>
- 

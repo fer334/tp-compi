@@ -490,34 +490,40 @@ function Automata() {
     const move = (state, input ) => {
       const inputIndex = alfabeto.findIndex(x=>x==input)
       const row = Destados.findIndex(x=>x.value.includes(state)) 
-      console.log(row,inputIndex,Dtran[row][inputIndex]);      
+      // console.log(row,inputIndex,Dtran[row][inputIndex]);      
       return Dtran[row][inputIndex]
     }
 
     
     let s = initialState;
-    console.log(Dtran,Destados);
-    console.log(s);
+    // console.log(Dtran,Destados);
+    // console.log(s);
     // console.log( move([s],input));
     let c = 0;
     while(c != input.length){
-      console.log(input[c]);
+      // console.log(input[c]);
       s = move(s,input[c])
       c++
     }
-    console.log(s, regexDefList);
-    let endState;
-    s.forEach(y=>{
-      if(!endState)
-        endState = regexDefList.find(x=>x.endState==y) 
-
-    })
-    // console.log(endState);
-    if(endState){
-      console.log(endState.leftSide);
-    }else{
-      console.log('no');
+    // console.log(s, regexDefList);
+    let returnValue = undefined
+    if(s){
+      let endState;
+      s.forEach(y=>{
+        if(!endState)
+          endState = regexDefList.find(x=>x.endState==y) 
+  
+      })
+      // console.log(endState);
+      if(endState){
+        returnValue = endState.leftSide
+        // console.log(endState.leftSide);
+      }else{
+        returnValue = undefined
+        console.log('no');
+      }
     }
+    return returnValue
   }
 
   this.getDestados=()=>{

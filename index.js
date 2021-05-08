@@ -3,43 +3,59 @@ import makeGraph from './draw.js'
 import Automata from './Automata.js'
 import Graph from './Graph.js'
 
-// // const regex = "a"
-// const regex = "(a|b)*abb" 
 
-// const afn = new Automata()
-// afn.setAlfabeto(['a','b','c'])
+// aguila buitre España Brasil
 
-// afn.regexToThompson(regex)
-// const afd = afn.toAfd();
-// console.log(afn.getDestados());
-// // afn.test()
+// Animales -> ( aguila | buitre ) * aguila buitre buitre
+// Paises -> España | Brasil
 
+const generateAfd = () => {
+    regexDefs = new Automata()
+    const alphabetInput = document.getElementById('alphabet').value
+    const alphabet = alphabetInput.split(' ')
+    const defsInput = document.getElementById('defs').value
+    const defList = defsInput.split('\n').map(x=>{
+        const leftSide = x.split(' -> ')[0]
+        const rightSide = x.split(' -> ')[1].split(' ')
+        return {leftSide: leftSide, rightSide: rightSide}
+    })
 
-// const [nodes,links] = Graph.toDraw(afd.graph.nodes);
-// makeGraph(nodes,links)
+    // regexDefs.setAlfabeto(['aguila','buitre'])
+    regexDefs.setAlfabeto(alphabet)
+    // regexDefs.regexDefToGraph([
+    //     {leftSide: 'Animales', rightSide: ['(','aguila','|','buitre',')','*','aguila','buitre','buitre']},
+    //     {leftSide: 'Paises', rightSide: ['buitre','aguila']},
+    //     {leftSide: 'Pais', rightSide: ['aguila','buitre']},
+    // ])
+    regexDefs.regexDefToGraph(defList)
+    // console.log(defList);
+}
 
+const runAfd = () => {
+    const input = document.getElementById('input').value
+    const inputList = input.split(' ')
+    const leftSide = regexDefs.run(inputList) 
+    const resultLabel = document.getElementById('result')
+    resultLabel.innerText = leftSide
+    
+}
 
-// TODO (alba|buitre)*alba -> '(','alba','|','buitre',')','*','alba'
-    // var string = "abcdeabcde";
-    // var newstringreplaced = string.replaceAll(/d/gi, ",d");
-    // var newstring = newstringreplaced.split(",");
-    // return newstring;
-// const regex = ['(','alba','|','buitre',')','*','alba'] 
-const regex = ['(','aguila','|','buitre',')','*','aguila','buitre','buitre'] 
+let regexDefs = new Automata()
+
+document.getElementById('generateButton').addEventListener('click',generateAfd)
+document.getElementById('runButton').addEventListener('click',runAfd)
+
+//  ( aguila | buitre ) * aguila buitre buitre  
+//  (aguila|buitre)*aguilabuitrebuitre 
+
 // const regex = ['(','aguila','buitre',')'] 
 // const regex = ['aguila','buitre'] 
 // regex.slice()
 
-const regexDefs = new Automata()
 
 
 
-regexDefs.setAlfabeto(['aguila','buitre'])
-regexDefs.regexDefToGraph([
-    {leftSide: 'Animales', rightSide: regex},
-    {leftSide: 'Paises', rightSide: ['buitre','aguila']},
-    {leftSide: 'Pais', rightSide: ['aguila','buitre']},
-])
+
 // regexDefs.regexToThompson('Animales',regex)
 // regexDefs.regexToThompson(['(','buitre','aguila',')'])
 
@@ -47,11 +63,11 @@ regexDefs.regexDefToGraph([
 
 // const afd = regexDefs.toAfd();
 
-const [nodes,links] = Graph.toDraw(regexDefs.graph.nodes);
-// const [nodes,links] = Graph.toDraw(afn.graph.nodes);
-makeGraph(nodes,links)
+// const [nodes,links] = Graph.toDraw(regexDefs.graph.nodes);
+// // const [nodes,links] = Graph.toDraw(afn.graph.nodes);
+// makeGraph(nodes,links)
 
-// const entrada = stringToArrayList('')
-// regexDefs.run('aguila buitre buitre'.split(' ')) 
-regexDefs.run(['buitre', 'aguila']) 
+// // const entrada = stringToArrayList('')
+// // regexDefs.run('aguila buitre buitre'.split(' ')) 
+// regexDefs.run(['buitre', 'aguila']) 
 
