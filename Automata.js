@@ -18,7 +18,7 @@ function Automata() {
   this.setGraphFromNodes = (g) => {
     this.graph = new Graph();
     this.graph.setGraph(g);
-  };
+  };  
 
   this.setAlfabeto = (a) => {
     alfabeto = a;
@@ -223,7 +223,7 @@ function Automata() {
         leftSide: regexDef.leftSide
       })
     });
-    console.log(graphsProps);
+    // console.log(graphsProps);
     let aIni,aEnd,bIni,bEnd
     for (let index = 0; index < graphsProps.length; index++) {
       const regexGraph = graphsProps[index];

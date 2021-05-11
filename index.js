@@ -1,7 +1,7 @@
 import graph from './exampleGraph.js'
-import makeGraph from './draw.js'
-import Automata from './Automata.js'
+// import makeGraph from './draw.js'
 import Graph from './Graph.js'
+import {LexicalAnalizer} from './LexicalAnalizer.js'
 
 
 // aguila buitre España Brasil
@@ -10,7 +10,7 @@ import Graph from './Graph.js'
 // Paises -> España | Brasil
 
 const generateAfd = () => {
-    regexDefs = new Automata()
+    // lexAnalizer = new Automata()
     const alphabetInput = document.getElementById('alphabet').value
     const alphabet = alphabetInput.split(' ')
     const defsInput = document.getElementById('defs').value
@@ -20,27 +20,31 @@ const generateAfd = () => {
         return {leftSide: leftSide, rightSide: rightSide}
     })
 
-    // regexDefs.setAlfabeto(['aguila','buitre'])
-    regexDefs.setAlfabeto(alphabet)
-    // regexDefs.regexDefToGraph([
+    lexAnalizer = new LexicalAnalizer()
+
+    // lexAnalizer.setAlfabeto(['aguila','buitre'])
+    lexAnalizer.setAlfabeto(alphabet)
+
+    // const  defList = [
     //     {leftSide: 'Animales', rightSide: ['(','aguila','|','buitre',')','*','aguila','buitre','buitre']},
     //     {leftSide: 'Paises', rightSide: ['buitre','aguila']},
     //     {leftSide: 'Pais', rightSide: ['aguila','buitre']},
-    // ])
-    regexDefs.regexDefToGraph(defList)
+    // ]
+
+    lexAnalizer.regexDefToGraph(defList)
     // console.log(defList);
 }
 
 const runAfd = () => {
     const input = document.getElementById('input').value
     const inputList = input.split(' ')
-    const leftSide = regexDefs.run(inputList) 
+    const leftSide = lexAnalizer.run(inputList) 
     const resultLabel = document.getElementById('result')
     resultLabel.innerText = leftSide
     
 }
 
-let regexDefs = new Automata()
+let lexAnalizer = new LexicalAnalizer()
 
 document.getElementById('generateButton').addEventListener('click',generateAfd)
 document.getElementById('runButton').addEventListener('click',runAfd)
@@ -56,18 +60,18 @@ document.getElementById('runButton').addEventListener('click',runAfd)
 
 
 
-// regexDefs.regexToThompson('Animales',regex)
-// regexDefs.regexToThompson(['(','buitre','aguila',')'])
+// lexAnalizer.regexToThompson('Animales',regex)
+// lexAnalizer.regexToThompson(['(','buitre','aguila',')'])
 
 // Estaba transformando toafd para que haga es nomas y me faltaba pasar del DTran al grafo
 
-// const afd = regexDefs.toAfd();
+// const afd = lexAnalizer.toAfd();
 
-// const [nodes,links] = Graph.toDraw(regexDefs.graph.nodes);
+// const [nodes,links] = Graph.toDraw(lexAnalizer.graph.nodes);
 // // const [nodes,links] = Graph.toDraw(afn.graph.nodes);
 // makeGraph(nodes,links)
 
 // // const entrada = stringToArrayList('')
-// // regexDefs.run('aguila buitre buitre'.split(' ')) 
-// regexDefs.run(['buitre', 'aguila']) 
+// // lexAnalizer.run('aguila buitre buitre'.split(' ')) 
+// lexAnalizer.run(['buitre', 'aguila']) 
 
