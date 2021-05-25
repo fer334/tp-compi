@@ -2,6 +2,7 @@ import graph from './exampleGraph.js'
 // import makeGraph from './draw.js'
 import Graph from './Graph.js'
 import {LexicalAnalizer} from './LexicalAnalizer.js'
+import { toFriendlyDtran } from './utils.js'
 
 
 // aguila buitre España Brasil
@@ -32,7 +33,10 @@ const generateAfd = () => {
     // ]
 
     lexAnalizer.regexDefToGraph(defList)
-    // console.log(defList);
+
+    const a = toFriendlyDtran(lexAnalizer.finalDtranDestados.Dtran,lexAnalizer.finalDtranDestados.Destados)
+    console.log(lexAnalizer);
+    console.log(a);
 }
 
 const runAfd = () => {

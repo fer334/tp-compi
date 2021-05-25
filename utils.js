@@ -59,7 +59,6 @@ const DtranToGraph = (props, Afdprops) => {
     if (temp[1]) newEndState = temp[1];
   });
 
-  // TODO: SUMIDERO PARA EL FINAL
   const temp = afdGraph.pushStateFromKey(
     lastState,
     keys,
