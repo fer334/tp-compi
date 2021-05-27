@@ -90,10 +90,14 @@ const generateAfd = () => {
     //     {leftSide: 'Pais', rightSide: ['aguila','buitre']},
     // ]
 
-    lexAnalizer.regexDefToGraph(defList)
-    console.log(lexAnalizer);
-    drawGraph(lexAnalizer);
-    createTable(lexAnalizer);
+    try {
+        lexAnalizer.regexDefToGraph(defList)
+        console.log(lexAnalizer);
+        drawGraph(lexAnalizer);
+        createTable(lexAnalizer);
+    } catch (error) {
+        console.log(error+'');
+    }
 }
 
 const runAfd = () => {
