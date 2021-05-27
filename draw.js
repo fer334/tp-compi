@@ -9,18 +9,19 @@ var margin = {
 var width = w - margin.left - margin.right;
 var height = h - margin.top - margin.bottom;
 
-var svg = d3
-  .select("body")
-  .append("svg")
-  .attr("id", "chart")
-  .attr("height", h)
-  .attr("width", w);
+
 
 var linkScale = d3.scale.linear().range([0.25, 1.0]);
 
 var colorScale = d3.scale.category20();
 
 var makeGraph = function (nodes, links) {
+  var svg = d3
+  .select("#graph")
+  .append("svg")
+  .attr("id", "chart")
+  .attr("height", h)
+  .attr("width", w);
   // var nodes={}
 
   let id = 0;

@@ -62,6 +62,7 @@ const createTable = (lexAnalizer) => {
 }
 
 const drawGraph = (lexAnalizer) => {
+    document.getElementById('graph').innerHTML='' 
     const [nodes,links] = Graph.toDraw(lexAnalizer);
     makeGraph(nodes,links)
 }
