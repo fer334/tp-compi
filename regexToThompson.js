@@ -93,8 +93,10 @@
       if (input == t) {
         index++;
         input = regex[index];
-      } else {
-        throw new Error(`error: recibi ${input} tendria que ser ${t}.`);
+      } else if(input===undefined) {
+        throw new Error(`Se esperaba ${t}`)
+      }else{
+        throw new Error(`Se esperaba una palabra del alfabeto.`);
       }
     };
 

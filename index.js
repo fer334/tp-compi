@@ -69,6 +69,7 @@ const drawGraph = (lexAnalizer) => {
 
 
 const generateAfd = () => {
+    document.getElementById('alert').style='display:none !important';
     // lexAnalizer = new Automata()
     const alphabetInput = document.getElementById('alphabet').value
     const alphabet = alphabetInput.split(' ')
@@ -96,6 +97,9 @@ const generateAfd = () => {
         drawGraph(lexAnalizer);
         createTable(lexAnalizer);
     } catch (error) {
+        const alert  = document.getElementById('alert')
+        alert.innerHTML = ''+error
+        alert.style = ""
         console.log(error+'');
     }
 }
