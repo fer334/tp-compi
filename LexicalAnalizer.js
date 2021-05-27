@@ -4,23 +4,22 @@ import regexToThompson from "./regexToThompson.js";
 import toAfd from "./toAfd.js";
 import { DtranToGraph, thompson5WithoutEnd } from "./utils.js";
 
-class LexicalAnalizer{
-
-  constructor(){
-    this.graph= new Graph();
-    this.alfabeto= null;
-    this.lastState= 0;
-    this.epsilon= "\0";
-    this.endStateList= [];
-    this.finalDtranDestados= [];
-    this.regexDefList= [];
-    this.initialState= 0;
+class LexicalAnalizer {
+  constructor() {
+    this.graph = new Graph();
+    this.alfabeto = null;
+    this.lastState = 0;
+    this.epsilon = "\0";
+    this.endStateList = [];
+    this.finalDtranDestados = [];
+    this.regexDefList = [];
+    this.initialState = 0;
     // console.log(this);
   }
-  
-  setAlfabeto =  (alfabeto) => setAlfabeto(this, alfabeto)
-  regexDefToGraph = (defList) => regexDefToGraph(this, defList)
-  run = (input) => run(this,input)
+
+  setAlfabeto = (alfabeto) => setAlfabeto(this, alfabeto);
+  regexDefToGraph = (defList) => regexDefToGraph(this, defList);
+  run = (input) => run(this, input);
 }
 
 const setAlfabeto = (props, alfabeto) => {
@@ -32,24 +31,20 @@ const setAlfabeto = (props, alfabeto) => {
 
 const regexDefToGraph = (props, defList) => {
   // console.log(props);
-  const toAfdMinimized = (props, initialState, endState) => {
+  const minAfd = (props, regexDef) => {
     // console.log(props);
-    const afd = toAfd(props, initialState, endState);
+    const thompsonG = regexToThompson(props, regexDef.rightSide);
+    const afd = toAfd(props, thompsonG.initialState, thompsonG.endState);
     const minAfd = minimize(props, afd);
     // console.log(minAfd);
-    [initialState, endState] = DtranToGraph(props, minAfd);
+    const [initialState, endState] = DtranToGraph(props, minAfd);
     return { initialState, endState };
   };
 
   const graphsProps = [];
   defList.forEach((regexDef) => {
     // console.log(regexDef);
-    const regexDefGraphProps = regexToThompson(props, regexDef.rightSide);
-    const { initialState, endState } = toAfdMinimized(
-      props,
-      regexDefGraphProps.initialState,
-      regexDefGraphProps.endState
-    );
+    const { initialState, endState } = minAfd(props, regexDef);
     props.lastState = endState + 1;
     // console.log(lastState);
     graphsProps.push({
@@ -76,12 +71,12 @@ const regexDefToGraph = (props, defList) => {
     // console.log(props.graph.nodes);
   }
   // console.log(aIni,aEnd,bIni,bEnd);
-  const afd = toAfd(props,aIni, bEnd);
+  const afd = toAfd(props, aIni, bEnd);
   props.initialState = afd.initialState;
   props.finalDtranDestados = { Dtran: afd.Dtran, Destados: afd.Destados };
   props.regexDefList = graphsProps;
 
-  DtranToGraph(props,{
+  DtranToGraph(props, {
     initialState: afd.initialState,
     endState: afd.endState,
     Dtran: afd.Dtran,
@@ -90,55 +85,52 @@ const regexDefToGraph = (props, defList) => {
 };
 
 const run = (props, input) => {
-  const finalDtranDestados = props.finalDtranDestados
-  const alfabeto = props.alfabeto
-  const initialState = props.initialState
-  const regexDefList = props.regexDefList
+  const finalDtranDestados = props.finalDtranDestados;
+  const alfabeto = props.alfabeto;
+  const initialState = props.initialState;
+  const regexDefList = props.regexDefList;
 
-  const {Dtran,Destados} = finalDtranDestados
-  console.log("MESSI",Dtran);
-  console.log("CR7",regexDefList);
+  const { Dtran, Destados } = finalDtranDestados;
+  console.log("MESSI", Dtran);
+  console.log("CR7", regexDefList);
 
-  const move = (state, input ) => {
-    const inputIndex = alfabeto.findIndex(x=>x==input)
-    const row = Destados.findIndex(x=>x.value.includes(state)) 
-    // console.log(row,inputIndex,Dtran[row][inputIndex]);      
-    return Dtran[row][inputIndex]
-  }
+  const move = (state, input) => {
+    const inputIndex = alfabeto.findIndex((x) => x == input);
+    const row = Destados.findIndex((x) => x.value.includes(state));
+    // console.log(row,inputIndex,Dtran[row][inputIndex]);
+    return Dtran[row][inputIndex];
+  };
 
-  
   let s = initialState;
   // console.log(Dtran,Destados);
   // console.log(s);
   // console.log( move([s],input));
   let c = 0;
-  while(c != input.length){
-   console.log("EE MESI", s);
-    s = move(s,input[c])
-    c++
+  while (c != input.length) {
+    console.log("EE MESI", s);
+    s = move(s, input[c]);
+    c++;
   }
   //console.log( s);
-  let returnValue = undefined
-  if(s){
+  let returnValue = undefined;
+  if (s) {
     let endState;
-    s.forEach(y=>{
-      if(!endState)
-        endState = regexDefList.find(x=>x.endState==y) 
-
-    })
+    s.forEach((y) => {
+      if (!endState) endState = regexDefList.find((x) => x.endState == y);
+    });
     // console.log(endState);
-    if(endState){
-      returnValue = endState.leftSide
+    if (endState) {
+      returnValue = endState.leftSide;
       // console.log(endState.leftSide);
       // console.log(returnValue);
-    }else{
-      returnValue = undefined
+    } else {
+      returnValue = undefined;
       // console.log('no');
     }
   }
 
   // console.log(returnValue);
-  return returnValue
-}
+  return returnValue;
+};
 
 export { LexicalAnalizer };
