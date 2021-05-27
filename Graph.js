@@ -1,4 +1,4 @@
-import { toFriendlyDtran } from "./utils.js";
+import { toFriendlyDtran, toPrettyDtran } from "./utils.js";
 
 class Graph {
   constructor() {
@@ -22,12 +22,12 @@ class Graph {
 
 
     console.log(lexAnalizer);
-    const {Dtran, keys} = toFriendlyDtran(lexAnalizer.finalDtranDestados.Dtran,lexAnalizer.finalDtranDestados.Destados)
+    const {Dtran, keys} = toPrettyDtran(lexAnalizer.finalDtranDestados.Dtran,lexAnalizer.finalDtranDestados.Destados)
 
     const ends = lexAnalizer.regexDefList.map(x=>x.endState)
     console.log(ends);
-    const endsKeys = lexAnalizer.finalDtranDestados.Destados.filter(x=>{
-      console.log(x);
+    const endsKeys = keys.filter(x=>{
+      // console.log(x);
       for (let i = 0; i < ends.length; i++) {
         const y = ends[i];
         if(x.value.includes(y))
@@ -42,20 +42,19 @@ class Graph {
 
     const nodesDraw = {};
     keys.forEach((node) => {
-      // console.log(index,node.id);
       nodesDraw[node.key]= { name: node.key };
     });
 
     const links = [];
     for (let rowIndex = 0; rowIndex < Dtran.length; rowIndex++) {
       const row = Dtran[rowIndex];
-      // console.log(row);
+      console.log(row);
     
       // console.log(rowIndex);
       for (let colIndex = 0; colIndex < row.length; colIndex++) {
         const col = row[colIndex];
-        console.log(keys[rowIndex].key,!emptyKey.includes(keys[rowIndex].key));
-        if(!emptyKey.includes(col)){
+        
+        if(col!=undefined){
 
           links.push({
             source: keys[rowIndex].key,

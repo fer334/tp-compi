@@ -3,7 +3,7 @@ import graph from './exampleGraph.js'
 import Graph from './Graph.js'
 import makeGraph from './draw.js'
 import {LexicalAnalizer} from './LexicalAnalizer.js'
-import { toFriendlyDtran } from './utils.js'
+import { toPrettyDtran } from './utils.js'
 
 
 // aguila buitre España Brasil
@@ -16,7 +16,7 @@ const createTable = (lexAnalizer) => {
     if(document.getElementsByTagName('table').length==1)
         document.getElementsByTagName('table')[0].remove()
     
-    const tableData = toFriendlyDtran(lexAnalizer.finalDtranDestados.Dtran,lexAnalizer.finalDtranDestados.Destados)
+    const tableData = toPrettyDtran(lexAnalizer.finalDtranDestados.Dtran,lexAnalizer.finalDtranDestados.Destados)
     const div = document.getElementById('table')
     const table = document.createElement("table")
     const row1 = document.createElement('tr')
@@ -36,7 +36,8 @@ const createTable = (lexAnalizer) => {
 
     console.log(tableData);
     for (let i = 0; i < tableData.Dtran.length; i++) {
-        const states = tableData.Dtran[i];
+        const states = tableData.Dtran[i].map(x=>x==undefined?'-':x);
+        console.log(states);
         
         const row = document.createElement('tr')
         

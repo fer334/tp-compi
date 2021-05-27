@@ -13,6 +13,25 @@ const toFriendlyDtran = (Dtran, keys) => {
   return { keys: keys, Dtran: friendlyDtran };
 };
 
+const toPrettyDtran = (Dtran, keys) => {
+  console.log(Dtran,keys)
+  const fooState = keys.findIndex((x) => x.value == '[]')
+  const newDtran = Dtran.filter((x,i)=>i!=fooState)
+  let i = 0;
+  const newKeys = keys
+    .filter((_,i)=>i!=fooState)
+    .map((x)=> {return {
+      key : String.fromCharCode(65+(i++)),
+      value : x.value
+    }})
+
+  const fTables = toFriendlyDtran(newDtran,newKeys)
+  
+  return {keys:newKeys, Dtran:fTables.Dtran}
+
+  // return { keys: keys, Dtran: friendlyDtran };
+};
+
 const splitStates = (keys, state) => {
   // console.log(state, keys.filter((x) => JSON.parse(x.value).some((y) => y == state)));
   return [
@@ -99,4 +118,4 @@ const thompson5WithoutEnd = (props,p1Ini, p1End, p2Ini, p2End) => {
   return [resIni, [p1End, p2End]];
 };
 
-export { toFriendlyDtran, splitStates, DtranToGraph, thompson5WithoutEnd };
+export { toFriendlyDtran, splitStates, DtranToGraph, thompson5WithoutEnd, toPrettyDtran };
