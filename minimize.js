@@ -103,7 +103,7 @@ const minimize = (props, graphProps) => {
     newDtran.push(row);
   });
 
-  // console.log(pi,Dtran,keys,);
+  //console.log("DETRANSSSSSS",pi,Dtran,keys,);
   // console.log(pi,newDtran,newKeys,);
   return {
     initialState: initialState,
