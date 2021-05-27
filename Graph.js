@@ -1,3 +1,4 @@
+import { toFriendlyDtran } from "./utils.js";
 
 class Graph {
   constructor() {
@@ -17,26 +18,53 @@ class Graph {
     //   this.nodes.push(node2)
   }
 
-  static toDraw = (GraphNodes) => {
-    // console.log(GraphNodes);
+  static toDraw = (lexAnalizer) => {
+
+
+    console.log(lexAnalizer);
+    const {Dtran, keys} = toFriendlyDtran(lexAnalizer.finalDtranDestados.Dtran,lexAnalizer.finalDtranDestados.Destados)
+
+    const ends = lexAnalizer.regexDefList.map(x=>x.endState)
+    console.log(ends);
+    const endsKeys = lexAnalizer.finalDtranDestados.Destados.filter(x=>{
+      console.log(x);
+      for (let i = 0; i < ends.length; i++) {
+        const y = ends[i];
+        if(x.value.includes(y))
+          return true
+      }
+      return false
+    }).map(x=>x.key)
+    console.log(endsKeys);
+
+    const emptyKey = lexAnalizer.finalDtranDestados.Destados.filter(x=>x.value.includes("[]")).map(x=>x.key)
+    console.log(emptyKey);
+
     const nodesDraw = {};
-    GraphNodes.forEach((node,index) => {
+    keys.forEach((node) => {
       // console.log(index,node.id);
-      nodesDraw[node.id]= { name: node.id };
+      nodesDraw[node.key]= { name: node.key };
     });
-    // console.log(nodesDraw);
 
     const links = [];
-    GraphNodes.forEach((node) => {
-      for (let index = 0; index < node.links.length; index++) {
-        const link = node.links[index];
-        links.push({
-          source: node.id,
-          target: link.to,
-          label: link.value,
-        });
+    for (let rowIndex = 0; rowIndex < Dtran.length; rowIndex++) {
+      const row = Dtran[rowIndex];
+      // console.log(row);
+    
+      // console.log(rowIndex);
+      for (let colIndex = 0; colIndex < row.length; colIndex++) {
+        const col = row[colIndex];
+        console.log(keys[rowIndex].key,!emptyKey.includes(keys[rowIndex].key));
+        if(!emptyKey.includes(col)){
+
+          links.push({
+            source: keys[rowIndex].key,
+            target: col,
+            label: lexAnalizer.alfabeto[colIndex],
+          });
+        }
       }
-    });
+    };
     return [nodesDraw, links];
   };
 

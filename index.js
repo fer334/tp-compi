@@ -1,6 +1,7 @@
 import graph from './exampleGraph.js'
 // import makeGraph from './draw.js'
 import Graph from './Graph.js'
+import makeGraph from './draw.js'
 import {LexicalAnalizer} from './LexicalAnalizer.js'
 import { toFriendlyDtran } from './utils.js'
 
@@ -9,6 +10,61 @@ import { toFriendlyDtran } from './utils.js'
 
 // Animales -> ( aguila | buitre ) * aguila buitre buitre
 // Paises -> España | Brasil
+
+const createTable = (lexAnalizer) => {
+
+    if(document.getElementsByTagName('table').length==1)
+        document.getElementsByTagName('table')[0].remove()
+    
+    const tableData = toFriendlyDtran(lexAnalizer.finalDtranDestados.Dtran,lexAnalizer.finalDtranDestados.Destados)
+    const div = document.getElementById('table')
+    const table = document.createElement("table")
+    const row1 = document.createElement('tr')
+
+    
+    const foo = document.createElement('th')
+    foo.append(document.createTextNode(''))
+    row1.append(foo)
+
+    for (const entry of lexAnalizer.alfabeto) {
+        const header = document.createElement('th')
+        const text = document.createTextNode(entry)
+        header.append(text)
+        row1.append(header)
+    }
+    table.append(row1)
+
+    console.log(tableData);
+    for (let i = 0; i < tableData.Dtran.length; i++) {
+        const states = tableData.Dtran[i];
+        
+        const row = document.createElement('tr')
+        
+        const firstCol = document.createElement('th')
+        firstCol.append(document.createTextNode('Estado '+tableData.keys[i].key))
+        row.append(firstCol)
+        for (const state of states) {
+            const col = document.createElement('td')
+            const text = document.createTextNode(state)
+            col.append(text)
+            row.append(col) 
+        }
+        table.append(row)
+        // const header = document.createElement('th')
+        // const text = document.createTextNode(entry)
+        // header.append(text)
+        // table.append(header)
+    }
+    div.append(table)
+    // console.log(a);
+    
+}
+
+const drawGraph = (lexAnalizer) => {
+    const [nodes,links] = Graph.toDraw(lexAnalizer);
+    makeGraph(nodes,links)
+}
+
 
 const generateAfd = () => {
     // lexAnalizer = new Automata()
@@ -33,10 +89,9 @@ const generateAfd = () => {
     // ]
 
     lexAnalizer.regexDefToGraph(defList)
-
-    const a = toFriendlyDtran(lexAnalizer.finalDtranDestados.Dtran,lexAnalizer.finalDtranDestados.Destados)
     console.log(lexAnalizer);
-    console.log(a);
+    drawGraph(lexAnalizer);
+    createTable(lexAnalizer);
 }
 
 const runAfd = () => {
@@ -70,10 +125,6 @@ document.getElementById('runButton').addEventListener('click',runAfd)
 // Estaba transformando toafd para que haga es nomas y me faltaba pasar del DTran al grafo
 
 // const afd = lexAnalizer.toAfd();
-
-// const [nodes,links] = Graph.toDraw(lexAnalizer.graph.nodes);
-// // const [nodes,links] = Graph.toDraw(afn.graph.nodes);
-// makeGraph(nodes,links)
 
 // // const entrada = stringToArrayList('')
 // // lexAnalizer.run('aguila buitre buitre'.split(' ')) 

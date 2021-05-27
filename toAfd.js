@@ -78,7 +78,7 @@ const toAfd = (props, initialState,endState) => {
       for (let i = 0; i < conjunt.length; i++) {
         // console.log(props.graph.nodes);
         const node = otherGraph.findNode(conjunt[i]);
-        if (!node.isVisited) {
+        if (node && !node.isVisited) {
           node.isVisited = true;
           newConjunt.push(node.id);
           const links = getEpsilonLinks(node);

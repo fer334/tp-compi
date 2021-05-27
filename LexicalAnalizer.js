@@ -76,7 +76,7 @@ const regexDefToGraph = (props, defList) => {
     // console.log(props.graph.nodes);
   }
   // console.log(aIni,aEnd,bIni,bEnd);
-  const afd = toAfd(props,aIni, 3);
+  const afd = toAfd(props,aIni, bEnd);
   props.initialState = afd.initialState;
   props.finalDtranDestados = { Dtran: afd.Dtran, Destados: afd.Destados };
   props.regexDefList = graphsProps;
