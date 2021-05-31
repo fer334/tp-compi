@@ -11,6 +11,13 @@ import { toPrettyDtran } from './utils.js'
 // Animales -> ( aguila | buitre ) * aguila buitre buitre
 // Paises -> España | Brasil
 
+/*Encargado de crear la tabla Dtrans, que es enviada
+al html, para que sea mostrado en la interfaz del usuario
+
+En caso que haya algo en la tabla se vacia, y se vuelve a crear 
+una actual, de acuerdo a lo que el usuario definio, en las 
+definiciones regulares.
+*/
 const createTable = (lexAnalizer) => {
 
     if(document.getElementsByTagName('table').length==1)
@@ -61,6 +68,13 @@ const createTable = (lexAnalizer) => {
     
 }
 
+/*Encargado de crear el grafo Dtrans, que es enviada
+al html, para que sea mostrado en la interfaz del usuario
+
+En caso que haya algo en el grafo, este se vacia, y se vuelve a crear 
+una actual, de acuerdo a lo que el usuario definio, en las 
+definiciones regulares.
+*/
 const drawGraph = (lexAnalizer) => {
     document.getElementById('graph').innerHTML='' 
     const [nodes,links] = Graph.toDraw(lexAnalizer);
@@ -119,6 +133,10 @@ const generateAfd = () => {
 
 }
 
+
+/*
+
+*/
 const runAfd = () => {
     const input = document.getElementById('input').value
     const inputList = input.split(' ')
