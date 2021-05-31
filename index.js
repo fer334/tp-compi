@@ -67,24 +67,38 @@ const drawGraph = (lexAnalizer) => {
     makeGraph(nodes,links)
 }
 
+/*Funcion que captura el alfabeto y las definiciones regulares 
+    Del html se guardan los valores del alfabeto y de las definiciones regulares
+    los cuales seran pasado para el analizador Lexico.
 
+
+*/
 const generateAfd = () => {
+    if(document.getElementsByTagName('table').length==1)
+        document.getElementsByTagName('table')[0].remove()
+        document.getElementById('graph').innerHTML='' 
     document.getElementById('alert').style='display:none !important';
     // lexAnalizer = new Automata()
     const alphabetInput = document.getElementById('alphabet').value
     const alphabet = alphabetInput.split(' ')
     const defsInput = document.getElementById('defs').value
-    const defList = defsInput.split('\n').map(x=>{
-        const leftSide = x.split(' -> ')[0]
-        const rightSide = x.split(' -> ')[1].split(' ')
-        return {leftSide: leftSide, rightSide: rightSide}
-    })
-
+    var defList = null;
+    try{
+        defList = defsInput.split('\n').map(x=>{
+            const leftSide = x.split(' -> ')[0]
+            const rightSide = x.split(' -> ')[1].split(' ')
+            return {leftSide: leftSide, rightSide: rightSide}
+        })
+        
+    }catch(error){
+        const alert  = document.getElementById('alert')
+        alert.innerHTML = 'Definicion regular No Definida'
+        alert.style = ""
+        console.log(error+'');
+        return 0;
+    }
     lexAnalizer = new LexicalAnalizer()
-
-    // lexAnalizer.setAlfabeto(['aguila','buitre'])
     lexAnalizer.setAlfabeto(alphabet)
-
     // const  defList = [
     //     {leftSide: 'Animales', rightSide: ['(','aguila','|','buitre',')','*','aguila','buitre','buitre']},
     //     {leftSide: 'Paises', rightSide: ['buitre','aguila']},
@@ -102,6 +116,7 @@ const generateAfd = () => {
         alert.style = ""
         console.log(error+'');
     }
+
 }
 
 const runAfd = () => {

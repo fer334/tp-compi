@@ -91,8 +91,8 @@ const run = (props, input) => {
   const regexDefList = props.regexDefList;
 
   const { Dtran, Destados } = finalDtranDestados;
-  console.log("MESSI", Dtran);
-  console.log("CR7", regexDefList);
+  console.log("DtransRun", Dtran);
+  console.log("RegexDefListRun", regexDefList);
 
   const move = (state, input) => {
     const inputIndex = alfabeto.findIndex((x) => x == input);
@@ -107,7 +107,6 @@ const run = (props, input) => {
   // console.log( move([s],input));
   let c = 0;
   while (c != input.length) {
-    console.log("EE MESI", s);
     s = move(s, input[c]);
     c++;
   }
