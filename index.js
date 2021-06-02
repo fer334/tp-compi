@@ -41,10 +41,10 @@ const createTable = (lexAnalizer) => {
     }
     table.append(row1)
 
-    console.log(tableData);
+    // console.log(tableData);
     for (let i = 0; i < tableData.Dtran.length; i++) {
         const states = tableData.Dtran[i].map(x=>x==undefined?'-':x);
-        console.log(states);
+        // console.log(states);
         
         const row = document.createElement('tr')
         
@@ -86,7 +86,7 @@ const generateAfd = () => {
         document.getElementsByTagName('table')[0].remove()
         document.getElementById('graph').innerHTML='' 
     document.getElementById('alert').style='display:none !important';
-    // lexAnalizer = new Automata()
+
     const alphabetInput = document.getElementById('alphabet').value
     const alphabet = alphabetInput.split(' ')
     const defsInput = document.getElementById('defs').value
@@ -107,15 +107,10 @@ const generateAfd = () => {
     }
     lexAnalizer = new LexicalAnalizer()
     lexAnalizer.setAlfabeto(alphabet)
-    // const  defList = [
-    //     {leftSide: 'Animales', rightSide: ['(','aguila','|','buitre',')','*','aguila','buitre','buitre']},
-    //     {leftSide: 'Paises', rightSide: ['buitre','aguila']},
-    //     {leftSide: 'Pais', rightSide: ['aguila','buitre']},
-    // ]
 
     try {
         lexAnalizer.regexDefToGraph(defList)
-        console.log(lexAnalizer);
+        // console.log(lexAnalizer);
         drawGraph(lexAnalizer);
         createTable(lexAnalizer);
     } catch (error) {

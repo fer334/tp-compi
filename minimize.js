@@ -74,25 +74,32 @@ const minimize = (props, graphProps) => {
   const newDtran = [];
   const newKeys = [];
 
+  // console.log(pi);
+  // console.log(keys);
   pi = pi.sort((a, b) => a.charCodeAt(0) - b.charCodeAt(0));
   //Se crea la nueva dtrans con los pi y el dran minimizado
   pi.forEach((element, index) => {
     const key = keys.findIndex((x) => x.key == element.split("")[0]);
-    newKeys.push({
-      key: element,
-      value: keys[key].value,
-    });
+    if(key != -1){
+      newKeys.push({
+        key: element,
+        value: keys[key].value,
+      });
+    }
   });
 
   pi.forEach((element) => {
     const key = keys.findIndex((x) => x.key == element.split("")[0]);
     const row = [];
-    Dtran[key].forEach((element) => {
-      const columnName = newKeys.find((x) => x.key.includes(element));
-      if (columnName) row.push(JSON.parse(columnName.value));
-      else row.push(undefined);
-    });
-    newDtran.push(row);
+    if(key != -1){
+
+      Dtran[key].forEach((element) => {
+        const columnName = newKeys.find((x) => x.key.includes(element));
+        if (columnName) row.push(JSON.parse(columnName.value));
+        else row.push(undefined);
+      });
+      newDtran.push(row);
+    }
   });
 
   //el retorno del inicio, el fin, el dtran y las llaves

@@ -11,7 +11,7 @@ const toFriendlyDtran = (Dtran, keys) => {
 };
 
 const toPrettyDtran = (Dtran, keys) => {
-  console.log(Dtran,keys)
+  // console.log(Dtran,keys)
   const fooState = keys.findIndex((x) => x.value == '[]')
   const newDtran = Dtran.filter((x,i)=>i!=fooState)
   let i = 0;
@@ -82,7 +82,7 @@ const DtranToGraph = (props, Afdprops) => {
     endKey
   );
   if (temp) newEndState = temp;
-  newEndState = keys.findIndex((x) => x.key == endKey.key);
+  newEndState = endKey ? keys.findIndex((x) => x.key == endKey.key): 0;
 
   return [newIniState + lastState, newEndState + lastState];
 };
