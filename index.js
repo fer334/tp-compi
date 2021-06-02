@@ -1,4 +1,4 @@
-import graph from './exampleGraph.js'
+// import graph from './exampleGraph.js'
 // import makeGraph from './draw.js'
 import Graph from './Graph.js'
 import makeGraph from './draw.js'
