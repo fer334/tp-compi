@@ -1,3 +1,11 @@
+/*
+Encargado de graficar el grafo en la interfaz del usuario
+funcion reutilizada donde se pasan los nodos y los enlaces
+y este se encarga de graficarlo, se especifac parametros como altura
+ancho y demas
+*/
+
+
 var w = 800;
 var h = 450;
 var margin = {

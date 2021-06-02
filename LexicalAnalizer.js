@@ -4,6 +4,13 @@ import regexToThompson from "./regexToThompson.js";
 import toAfd from "./toAfd.js";
 import { DtranToGraph, thompson5WithoutEnd } from "./utils.js";
 
+/*Es el analizador lexico, donde todas las funciones se utilizan
+  para poder generar el Dtran final con el Afd de las 
+  producciones y el grafo del afd
+  el objeto tiene el grafo, el alfabeto, el ultimo estado, el conjunto vacio,
+  los estados finales, los estados detran y destados finales, 
+  la lista de exp regulares, y el estado inicial
+*/
 class LexicalAnalizer {
   constructor() {
     this.graph = new Graph();
@@ -21,11 +28,22 @@ class LexicalAnalizer {
   run = (input) => run(this, input);
 }
 
+//donde se setea el alfabeto que va a ser utilizado
 const setAlfabeto = (props, alfabeto) => {
   props.alfabeto = alfabeto;
   return props;
 };
 
+/*
+Encargado de convertir la lista de exp regulares al grafo del afd minimo
+para cada definicio regular se crea el afd minimo, 
+se pasan a las funciones de thompson, de convertilos a afd, para luego finalmente
+minimizarlo.
+Luego de ello se unen todas las producciones atraves del conjunto vacio, esto
+al convertirse de vuelta en AFN, se vuelve a parsar a AFD
+Al final de todo esto se devuelve ya el la matriz dtran con el estado inicial, el final
+y las llaves
+*/
 const regexDefToGraph = (props, defList) => {
   const minAfd = (props, regexDef) => {
     const thompsonG = regexToThompson(props, regexDef.rightSide);
@@ -73,6 +91,14 @@ const regexDefToGraph = (props, defList) => {
   });
 };
 
+
+/*El que corre para la validacion, se obtiene las entradas ccargadas
+y se analiza si esa entrada es valida y cumple con alguna produccion,
+lo que se hace es recorrer el grafo de acuerdo al alfabeto en orden a lo que 
+se recibio en la entrada. Al final de recorrer se comprueba si se llego a un
+estado de aceptacion, y si es asi se ve a que produccion pertenece ese estado
+caso contrario se retorno produccion no definida
+*/
 const run = (props, input) => {
   const finalDtranDestados = props.finalDtranDestados;
   const alfabeto = props.alfabeto;

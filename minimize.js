@@ -19,7 +19,7 @@ const minimize = (props, graphProps) => {
     graphProps.Destados
   );
   const alfabeto = props.alfabeto
-
+//Particion inicial de PI. Se utiliza el algoritmo de particio, de estados finales e iniciales
   let pi = [];
   let [endStateKey, _] = splitStates(keys, endState);
 
@@ -30,13 +30,17 @@ const minimize = (props, graphProps) => {
     .map((x) => x.key)
     .reduce((pre, curr) => pre + curr, "");
 
+  //estado inicial con la llave
   const [startKey, restKey] = split(onlyKeysValue, onlyKeysValueEndState);
 
+  //se agrega a pi
   pi.push(startKey, restKey);
 
   let isUpdated = true;
+  //mientras haya actualizacions en pi
   while (isUpdated) {
     isUpdated = false;
+    //se recorre la pi actual como en el algoritmo para ver si se puede dividir
     pi.forEach((conjunt) => {
       if (conjunt.length != 1) {
         alfabeto.forEach((link, dtranIndex) => {
@@ -69,8 +73,9 @@ const minimize = (props, graphProps) => {
   }
   const newDtran = [];
   const newKeys = [];
-  pi = pi.sort((a, b) => a.charCodeAt(0) - b.charCodeAt(0));
 
+  pi = pi.sort((a, b) => a.charCodeAt(0) - b.charCodeAt(0));
+  //Se crea la nueva dtrans con los pi y el dran minimizado
   pi.forEach((element, index) => {
     const key = keys.findIndex((x) => x.key == element.split("")[0]);
     newKeys.push({
@@ -90,6 +95,7 @@ const minimize = (props, graphProps) => {
     newDtran.push(row);
   });
 
+  //el retorno del inicio, el fin, el dtran y las llaves
   return {
     initialState: initialState,
     endState: endState,
