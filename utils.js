@@ -3,13 +3,10 @@ const toFriendlyDtran = (Dtran, keys) => {
 
   Dtran.forEach((row) => {
     const newrow = row.map((column) => {
-      // console.log(keys);
-      // console.log(keys.find((x) => x.value == JSON.stringify(column))?.key);
       return keys.find((x) => x.value == JSON.stringify(column))?.key;
     });
     friendlyDtran.push(newrow);
   });
-  // console.log(Dtran);
   return { keys: keys, Dtran: friendlyDtran };
 };
 
@@ -29,11 +26,9 @@ const toPrettyDtran = (Dtran, keys) => {
   
   return {keys:newKeys, Dtran:fTables.Dtran}
 
-  // return { keys: keys, Dtran: friendlyDtran };
 };
 
 const splitStates = (keys, state) => {
-  // console.log(state, keys.filter((x) => JSON.parse(x.value).some((y) => y == state)));
   return [
     keys.filter((x) => JSON.parse(x.value).some((y) => y == state)),
     keys.filter((x) => {
@@ -42,18 +37,20 @@ const splitStates = (keys, state) => {
   ];
 };
 
+/*Funcion encargada de tranformar la tabla Dtrans 
+generada a un Grafo
+Tabla dtran se envia la funcion friendly dtran con las propiedades del afd
+y devuelve un dtran apropidado para el usar la logica con el grafo
+*/ 
 const DtranToGraph = (props, Afdprops) => {
-  // console.log(Afdprops);
   const { keys, Dtran } = toFriendlyDtran(Afdprops.Dtran, Afdprops.keys);
   const initialState = Afdprops.initialState;
   const endState = Afdprops.endState;
-  // console.log(initialState,endState,Dtran,keys);
   const afdGraph = props.graph;
   const alfabeto = props.alfabeto;
   const lastState = props.lastState;
 
   let [[startKey], restKey] = splitStates(keys, initialState);
-  // console.log(startKey);
 
   let endKey;
   [[endKey], restKey] = splitStates(restKey, endState);
@@ -65,7 +62,6 @@ const DtranToGraph = (props, Afdprops) => {
     alfabeto,
     startKey
   );
-  // console.log(newIniState);
   let newEndState;
   restKey.forEach((state) => {
     const temp = afdGraph.pushStateFromKey(
@@ -86,14 +82,11 @@ const DtranToGraph = (props, Afdprops) => {
     endKey
   );
   if (temp) newEndState = temp;
-  // console.log(temp);
-  // console.log(newIniState, newEndState);
-  // console.log(afdGraph);
-  // console.log(endKey);
   newEndState = keys.findIndex((x) => x.key == endKey.key);
 
   return [newIniState + lastState, newEndState + lastState];
 };
+
 
 const thompson5WithoutEnd = (props,p1Ini, p1End, p2Ini, p2End) => {
   let resIni;
@@ -104,14 +97,10 @@ const thompson5WithoutEnd = (props,p1Ini, p1End, p2Ini, p2End) => {
   } else {
     const initialNode = props.graph.getFreeNodeName();
     props.graph.pushNode(initialNode);
-    // const endNode = props.graph.getFreeNodeName();
-    // props.graph.pushNode(endNode);
 
     props.graph.link(initialNode, p1Ini, props.epsilon);
     props.graph.link(initialNode, p2Ini, props.epsilon);
 
-    // props.graph.link(p1End, endNode,props.epsilon)
-    // props.graph.link(p2End, endNode,props.epsilon)
 
     resIni = initialNode;
   }

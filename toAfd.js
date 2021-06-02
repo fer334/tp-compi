@@ -1,3 +1,8 @@
+/*El AFN generado con thompson es pasado aqui para
+la transformacion a un AFD, se tiene como parametros 
+el Afn, el nodo de inicio y el nodo de fin
+se retorna el grafo del afd
+*/
 const toAfd = (props, initialState,endState) => {
 
     let Destados = [];
@@ -117,6 +122,7 @@ const toAfd = (props, initialState,endState) => {
     newDestado(cerradura([initialState]));
     // console.log(Destados);
 
+    //Mientras exista algun estado que aun no ha sido recorrido, no marcado
     while (destadosContainsStateUnmarked()) {
       const T = getUnmarkedState();
       markUnmarkedState(T);

@@ -58,13 +58,9 @@ const createTable = (lexAnalizer) => {
             row.append(col) 
         }
         table.append(row)
-        // const header = document.createElement('th')
-        // const text = document.createTextNode(entry)
-        // header.append(text)
-        // table.append(header)
+        
     }
     div.append(table)
-    // console.log(a);
     
 }
 
@@ -84,8 +80,6 @@ const drawGraph = (lexAnalizer) => {
 /*Funcion que captura el alfabeto y las definiciones regulares 
     Del html se guardan los valores del alfabeto y de las definiciones regulares
     los cuales seran pasado para el analizador Lexico.
-
-
 */
 const generateAfd = () => {
     if(document.getElementsByTagName('table').length==1)
@@ -134,8 +128,11 @@ const generateAfd = () => {
 }
 
 
-/*
-
+/*Funcion que captura la entrada en el paso 2, el cual
+se encarga de validar y comprobar el AFD, y se encarga de decir
+a que produccion pertenece lo que se carga en la entrada.
+Se encarga de recorrer el grafo de acuerdo a la entrada ingresada
+Y ver si se llega a un estado final de aceptacion y a cual.
 */
 const runAfd = () => {
     const input = document.getElementById('input').value
@@ -150,26 +147,3 @@ let lexAnalizer = new LexicalAnalizer()
 
 document.getElementById('generateButton').addEventListener('click',generateAfd)
 document.getElementById('runButton').addEventListener('click',runAfd)
-
-//  ( aguila | buitre ) * aguila buitre buitre  
-//  (aguila|buitre)*aguilabuitrebuitre 
-
-// const regex = ['(','aguila','buitre',')'] 
-// const regex = ['aguila','buitre'] 
-// regex.slice()
-
-
-
-
-
-// lexAnalizer.regexToThompson('Animales',regex)
-// lexAnalizer.regexToThompson(['(','buitre','aguila',')'])
-
-// Estaba transformando toafd para que haga es nomas y me faltaba pasar del DTran al grafo
-
-// const afd = lexAnalizer.toAfd();
-
-// // const entrada = stringToArrayList('')
-// // lexAnalizer.run('aguila buitre buitre'.split(' ')) 
-// lexAnalizer.run(['buitre', 'aguila']) 
-
